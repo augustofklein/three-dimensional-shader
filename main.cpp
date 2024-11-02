@@ -11,12 +11,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1800;
+const unsigned int SCR_HEIGHT = 1200;
 
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+// determina as posicoes iniciais da camera
+glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 5.37f);
+glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 
 float sensitivity = 0.1f;
 float yaw = -90.0f;
@@ -37,7 +38,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Coordenadas OpenGL : Cubo", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL : Corrida Maluca", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -67,56 +68,82 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-
+        // Chão (manter o mesmo)
         -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f,
          100.0f,  -0.6f, -100.0f,  1.0f, 1.0f,
          100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
          100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
         -100.0f,  -0.6f,  100.0f,  0.0f, 0.0f,
         -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f
+    };
+
+    float vertices_carro[] = {
+
+                // Corpo do carro (base retangular)
+        -1.0f, -0.5f, -2.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+         1.0f, -0.5f, -2.0f,  1.0f, 0.0f, // inferior direito traseiro
+         1.0f,  0.0f, -2.0f,  1.0f, 1.0f, // superior direito traseiro
+         1.0f,  0.0f, -2.0f,  1.0f, 1.0f, // superior direito traseiro
+        -1.0f,  0.0f, -2.0f,  0.0f, 1.0f, // superior esquerdo traseiro
+        -1.0f, -0.5f, -2.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+
+        -1.0f, -0.5f,  2.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+         1.0f, -0.5f,  2.0f,  1.0f, 0.0f, // inferior direito frontal
+         1.0f,  0.0f,  2.0f,  1.0f, 1.0f, // superior direito frontal
+         1.0f,  0.0f,  2.0f,  1.0f, 1.0f, // superior direito frontal
+        -1.0f,  0.0f,  2.0f,  0.0f, 1.0f, // superior esquerdo frontal
+        -1.0f, -0.5f,  2.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+
+        // Teto do carro (retângulo menor)
+        -0.7f,  0.0f, -1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+         0.7f,  0.0f, -1.0f,  1.0f, 0.0f, // inferior direito traseiro
+         0.7f,  0.4f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
+         0.7f,  0.4f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
+        -0.7f,  0.4f, -1.0f,  0.0f, 1.0f, // superior esquerdo traseiro
+        -0.7f,  0.0f, -1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+
+        -0.7f,  0.0f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+         0.7f,  0.0f,  1.0f,  1.0f, 0.0f, // inferior direito frontal
+         0.7f,  0.4f,  1.0f,  1.0f, 1.0f, // superior direito frontal
+         0.7f,  0.4f,  1.0f,  1.0f, 1.0f, // superior direito frontal
+        -0.7f,  0.4f,  1.0f,  0.0f, 1.0f, // superior esquerdo frontal
+        -0.7f,  0.0f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+
+        // Roda traseira esquerda (caixa)
+        -1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
+        -0.7f, -0.6f, -1.5f,  1.0f, 0.0f,
+        -0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
+        -0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
+        -1.1f, -0.3f, -1.5f,  0.0f, 1.0f,
+        -1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
+
+        // Roda traseira direita (caixa)
+         1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
+         0.7f, -0.6f, -1.5f,  1.0f, 0.0f,
+         0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
+         0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
+         1.1f, -0.3f, -1.5f,  0.0f, 1.0f,
+         1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
+
+        // Roda dianteira esquerda (caixa)
+        -1.1f, -0.6f,  1.5f,  0.0f, 0.0f,
+        -0.7f, -0.6f,  1.5f,  1.0f, 0.0f,
+        -0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
+        -0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
+        -1.1f, -0.3f,  1.5f,  0.0f, 1.0f,
+        -1.1f, -0.6f,  1.5f,  0.0f, 0.0f,
+
+        // Roda dianteira direita (caixa)
+         1.1f, -0.6f,  1.5f,  0.0f, 0.0f,
+         0.7f, -0.6f,  1.5f,  1.0f, 0.0f,
+         0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
+         0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
+         1.1f, -0.3f,  1.5f,  0.0f, 1.0f,
+         1.1f, -0.6f,  1.5f,  0.0f, 0.0f
 
     };
+
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -126,9 +153,12 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
+
     // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
     // texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
@@ -150,7 +180,7 @@ int main()
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    unsigned char *data = stbi_load("res/images/pedra-28.jpg", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("res/images/pista_corrida.jpg", &width, &height, &nrChannels, 0);
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -161,6 +191,8 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+
+
     // texture 2
     // ---------
     glGenTextures(1, &texture2);
@@ -172,7 +204,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    data = stbi_load("res/images/opengl.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("res/images/pista_corrida.png", &width, &height, &nrChannels, 0);
     if (data)
     {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
@@ -224,13 +256,13 @@ int main()
         glm::mat4 view          = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         glm::mat4 projection    = glm::mat4(1.0f);
         model = glm::rotate(model, (float)0, glm::vec3(0.0f, 1.0f, 0.0f));
-       // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.0f, -0.5f, 0.0f));
-        // model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0.5f, 0.5f, -0.5f));
         view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
         // retrieve the matrix uniform locations
         unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
         unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
+
         // pass them to the shaders (3 different ways)
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
@@ -240,6 +272,7 @@ int main()
         // render box
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/5);
+        //glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro)/5);
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -279,7 +312,7 @@ void viraCamera(float x, float y)
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-    const float cameraSpeed = 0.01f;
+    const float cameraSpeed = 0.05f;
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -299,12 +332,21 @@ void processInput(GLFWwindow *window)
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
         viraCamera(0.0f, 1.0f);
+
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
         viraCamera(0.0f, -1.0f);
+
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
         viraCamera(-1.0f, 0.0f);
+
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         viraCamera(1.0f, 0.0f);
+
+     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        cameraPos += glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
+
+     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+        cameraPos += glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed;
 
 }
 
