@@ -63,7 +63,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("vertex.glsl", "fragment.glsl");
+    Shader ourShader("vertex.glsl", "fragment.glsl"); //TODO: renomear para floorShader
+    Shader carShader("vertex.glsl", "car_shader.glsl");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -144,18 +145,16 @@ int main()
 
     };
 
-    unsigned int VBO, VAO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
+    // Configurar buffers de vértices para cada objeto
+    GLuint VBOs[2], VAOs[2];
+    glGenVertexArrays(2, VAOs);
+    glGenBuffers(2, VBOs);
 
-    glBindVertexArray(VAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // Chão
+    glBindVertexArray(VAOs[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
-
-    // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -164,10 +163,28 @@ int main()
     glEnableVertexAttribArray(1);
 
 
+    // Carro
+    glBindVertexArray(VAOs[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+
+
+
+
+
+
+
+
     // load and create a texture
     // -------------------------
     unsigned int texture1, texture2;
-    // texture 1
+
+
+
+    // texture para a pista
     // ---------
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -188,12 +205,12 @@ int main()
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture 1" << std::endl;
     }
     stbi_image_free(data);
 
 
-    // texture 2
+    // texture para o Carro
     // ---------
     glGenTextures(1, &texture2);
     glBindTexture(GL_TEXTURE_2D, texture2);
@@ -204,7 +221,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
-    data = stbi_load("res/images/pista_corrida.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("res/images/opengl.png", &width, &height, &nrChannels, 0);
     if (data)
     {
         // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
@@ -213,15 +230,15 @@ int main()
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture 2" << std::endl;
     }
     stbi_image_free(data);
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
-    ourShader.use();
+    //ourShader.use();
     ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
+    carShader.setInt("texture2", 0);
 
 
     // render loop
@@ -269,10 +286,38 @@ int main()
         // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
         ourShader.setMat4("projection", projection);
 
-        // render box
-        glBindVertexArray(VAO);
+        // render floor
+        glBindVertexArray(VAOs[0]);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/5);
         //glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro)/5);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        modelLoc = glGetUniformLocation(carShader.ID, "model");
+        viewLoc  = glGetUniformLocation(carShader.ID, "view");
+
+        // pass them to the shaders (3 different ways)
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        carShader.setMat4("projection", projection);
+
+        // Carro
+        carShader.use();
+        glBindVertexArray(VAOs[1]);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro)/5);
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
@@ -283,8 +328,8 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(2, VAOs);
+    glDeleteBuffers(2, VBOs);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -294,19 +339,22 @@ int main()
 
 void viraCamera(float x, float y)
 {
- yaw += x * sensitivity;
- pitch += y * sensitivity;
- if(pitch > 89.0f)
- pitch = 89.0f;
- if(pitch < -89.0f)
- pitch = -89.0f;
- glm::vec3 direction;
- direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
- direction.y = sin(glm::radians(pitch));
- direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
- cameraFront = glm::normalize(direction);
-}
+    yaw += x * sensitivity;
+    pitch += y * sensitivity;
 
+    if(pitch > 89.0f)
+        pitch = 89.0f;
+
+    if(pitch < -89.0f)
+        pitch = -89.0f;
+
+    glm::vec3 direction;
+    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = sin(glm::radians(pitch));
+    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(direction);
+
+}
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
