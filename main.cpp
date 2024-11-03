@@ -14,7 +14,7 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1200;
 
-// determina as posicoes iniciais da camera
+// Camera settings
 glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 5.37f);
 glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
@@ -25,19 +25,12 @@ float pitch = 0.0f;
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
+    // GLFW: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-    // glfw window creation
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL : Corrida Maluca", NULL, NULL);
     if (window == NULL)
     {
@@ -48,29 +41,21 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // glew: load all OpenGL function pointers
-    // ---------------------------------------
-    if(glewInit()!=GLEW_OK) {
+    if (glewInit() != GLEW_OK) {
         std::cout << "Ocorreu um erro iniciando GLEW!" << std::endl;
     } else {
         std::cout << "GLEW OK!" << std::endl;
         std::cout << glGetString(GL_VERSION) << std::endl;
     }
 
-    // configure global opengl state
-    // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // build and compile our shader zprogram
-    // ------------------------------------
-    Shader ourShader("vertex.glsl", "fragment.glsl"); //TODO: renomear para floorShader
+    // Shaders para chão e carro
+    Shader ourShader("vertex.glsl", "fragment.glsl");
     Shader carShader("vertex.glsl", "car_shader.glsl");
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
+    // Dados de vértices para o chão
     float vertices[] = {
-
-        // Chão (manter o mesmo)
         -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f,
          100.0f,  -0.6f, -100.0f,  1.0f, 1.0f,
          100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
@@ -79,260 +64,118 @@ int main()
         -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f
     };
 
+    // Dados de vértices para o carro
     float vertices_carro[] = {
+        // Corpo do carro
+        -1.0f, -0.5f, -2.0f,  0.0f, 0.0f,
+         1.0f, -0.5f, -2.0f,  1.0f, 0.0f,
+         1.0f,  0.0f, -2.0f,  1.0f, 1.0f,
+         1.0f,  0.0f, -2.0f,  1.0f, 1.0f,
+        -1.0f,  0.0f, -2.0f,  0.0f, 1.0f,
+        -1.0f, -0.5f, -2.0f,  0.0f, 0.0f,
 
-                // Corpo do carro (base retangular)
-        -1.0f, -0.5f, -2.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-         1.0f, -0.5f, -2.0f,  1.0f, 0.0f, // inferior direito traseiro
-         1.0f,  0.0f, -2.0f,  1.0f, 1.0f, // superior direito traseiro
-         1.0f,  0.0f, -2.0f,  1.0f, 1.0f, // superior direito traseiro
-        -1.0f,  0.0f, -2.0f,  0.0f, 1.0f, // superior esquerdo traseiro
-        -1.0f, -0.5f, -2.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-
-        -1.0f, -0.5f,  2.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-         1.0f, -0.5f,  2.0f,  1.0f, 0.0f, // inferior direito frontal
-         1.0f,  0.0f,  2.0f,  1.0f, 1.0f, // superior direito frontal
-         1.0f,  0.0f,  2.0f,  1.0f, 1.0f, // superior direito frontal
-        -1.0f,  0.0f,  2.0f,  0.0f, 1.0f, // superior esquerdo frontal
-        -1.0f, -0.5f,  2.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-
-        // Teto do carro (retângulo menor)
-        -0.7f,  0.0f, -1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-         0.7f,  0.0f, -1.0f,  1.0f, 0.0f, // inferior direito traseiro
-         0.7f,  0.4f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
-         0.7f,  0.4f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
-        -0.7f,  0.4f, -1.0f,  0.0f, 1.0f, // superior esquerdo traseiro
-        -0.7f,  0.0f, -1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-
-        -0.7f,  0.0f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-         0.7f,  0.0f,  1.0f,  1.0f, 0.0f, // inferior direito frontal
-         0.7f,  0.4f,  1.0f,  1.0f, 1.0f, // superior direito frontal
-         0.7f,  0.4f,  1.0f,  1.0f, 1.0f, // superior direito frontal
-        -0.7f,  0.4f,  1.0f,  0.0f, 1.0f, // superior esquerdo frontal
-        -0.7f,  0.0f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-
-        // Roda traseira esquerda (caixa)
-        -1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
-        -0.7f, -0.6f, -1.5f,  1.0f, 0.0f,
-        -0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
-        -0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
-        -1.1f, -0.3f, -1.5f,  0.0f, 1.0f,
-        -1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
-
-        // Roda traseira direita (caixa)
-         1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
-         0.7f, -0.6f, -1.5f,  1.0f, 0.0f,
-         0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
-         0.7f, -0.3f, -1.5f,  1.0f, 1.0f,
-         1.1f, -0.3f, -1.5f,  0.0f, 1.0f,
-         1.1f, -0.6f, -1.5f,  0.0f, 0.0f,
-
-        // Roda dianteira esquerda (caixa)
-        -1.1f, -0.6f,  1.5f,  0.0f, 0.0f,
-        -0.7f, -0.6f,  1.5f,  1.0f, 0.0f,
-        -0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
-        -0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
-        -1.1f, -0.3f,  1.5f,  0.0f, 1.0f,
-        -1.1f, -0.6f,  1.5f,  0.0f, 0.0f,
-
-        // Roda dianteira direita (caixa)
-         1.1f, -0.6f,  1.5f,  0.0f, 0.0f,
-         0.7f, -0.6f,  1.5f,  1.0f, 0.0f,
-         0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
-         0.7f, -0.3f,  1.5f,  1.0f, 1.0f,
-         1.1f, -0.3f,  1.5f,  0.0f, 1.0f,
-         1.1f, -0.6f,  1.5f,  0.0f, 0.0f
-
+        -1.0f, -0.5f,  2.0f,  0.0f, 0.0f,
+         1.0f, -0.5f,  2.0f,  1.0f, 0.0f,
+         1.0f,  0.0f,  2.0f,  1.0f, 1.0f,
+         1.0f,  0.0f,  2.0f,  1.0f, 1.0f,
+        -1.0f,  0.0f,  2.0f,  0.0f, 1.0f,
+        -1.0f, -0.5f,  2.0f,  0.0f, 0.0f,
     };
 
-    // Configurar buffers de vértices para cada objeto
     GLuint VBOs[2], VAOs[2];
     glGenVertexArrays(2, VAOs);
     glGenBuffers(2, VBOs);
 
-
-    // Chão
+    // Configuração do chão
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-
-    // texture coord attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
-    // Carro
+    // Configuração do carro
     glBindVertexArray(VAOs[1]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
-
-
-
-
-
-
-
-
-    // load and create a texture
-    // -------------------------
+    // Texturas
     unsigned int texture1, texture2;
-
-
-
-    // texture para a pista
-    // ---------
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
+    stbi_set_flip_vertically_on_load(true);
     unsigned char *data = stbi_load("res/images/pista_corrida.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
+    if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
-    else
-    {
-        std::cout << "Failed to load texture 1" << std::endl;
-    }
     stbi_image_free(data);
 
-
-    // texture para o Carro
-    // ---------
     glGenTextures(1, &texture2);
     glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
     data = stbi_load("res/images/opengl.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
+    if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
-    else
-    {
-        std::cout << "Failed to load texture 2" << std::endl;
-    }
     stbi_image_free(data);
 
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-    // -------------------------------------------------------------------------------------------
-    //ourShader.use();
+    ourShader.use();
     ourShader.setInt("texture1", 0);
+    carShader.use();
     carShader.setInt("texture2", 0);
 
-
-    // render loop
-    // -----------
-    while (!glfwWindowShouldClose(window))
-    {
-        // input
-        // -----
+    // Loop de renderização
+    while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
-        // render
-        // ------
-        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // also clear the depth buffer now!
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
 
-        // activate shader
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
         ourShader.use();
-
-        const float radius = 2.0f;
-        float camX = sin(glfwGetTime()) * radius;
-        float camZ = cos(glfwGetTime()) * radius;
-
-        // create transformations
-        glm::mat4 model         = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        glm::mat4 view          = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection    = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)0, glm::vec3(0.0f, 1.0f, 0.0f));
-        view  = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-
-        // retrieve the matrix uniform locations
-        unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        unsigned int viewLoc  = glGetUniformLocation(ourShader.ID, "view");
-
-        // pass them to the shaders (3 different ways)
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-        ourShader.setMat4("projection", projection);
-
-        // render floor
         glBindVertexArray(VAOs[0]);
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/5);
-        //glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro)/5);
+        ourShader.setMat4("projection", projection);
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (5 * sizeof(float)));
 
+        glBindTexture(GL_TEXTURE_2D, texture2);
+        model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        modelLoc = glGetUniformLocation(carShader.ID, "model");
-        viewLoc  = glGetUniformLocation(carShader.ID, "view");
-
-        // pass them to the shaders (3 different ways)
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-        // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
-        carShader.setMat4("projection", projection);
-
-        // Carro
         carShader.use();
         glBindVertexArray(VAOs[1]);
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro)/5);
+        carShader.setMat4("projection", projection);
+        glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro) / (5 * sizeof(float)));
 
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
     glDeleteVertexArrays(2, VAOs);
     glDeleteBuffers(2, VBOs);
-
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
