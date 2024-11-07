@@ -22,6 +22,109 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 float sensitivity = 0.1f;
 float yaw = -90.0f;
 float pitch = 0.0f;
+unsigned char pixelColor[3];
+
+// Dados de vértices para o chão
+float vertices[] = {
+    -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f,
+     100.0f,  -0.6f, -100.0f,  1.0f, 1.0f,
+     100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
+     100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
+    -100.0f,  -0.6f,  100.0f,  0.0f, 0.0f,
+    -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f
+};
+
+// Dados de vértices para o carro
+float vertices_carro[] = {
+
+    // Corpo do carro (base retangular)
+     2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+     2.0f, -0.5f, -1.0f,  1.0f, 0.0f, // inferior direito traseiro
+     2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
+     2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
+     2.0f,  0.0f,  1.0f,  0.0f, 1.0f, // superior esquerdo traseiro
+     2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+
+    -2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+    -2.0f, -0.5f, -1.0f,  1.0f, 0.0f, // inferior direito frontal
+    -2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito frontal
+    -2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito frontal
+    -2.0f,  0.0f,  1.0f,  0.0f, 1.0f, // superior esquerdo frontal
+    -2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+
+    // Retângulo traseiro
+     2.0f, -0.5f,  1.0f, 0.0f, 0.0f, // inferior esquerdo traseiro
+     2.0f, -0.5f, -1.0f, 1.0f, 0.0f, // inferior direito traseiro
+     2.0f,  0.0f, -1.0f, 1.0f, 1.0f, // superior direito traseiro
+     2.0f,  0.0f,  1.0f, 1.0f, 1.0f, // superior esquerdo traseiro
+
+    // Retângulo frontal
+    -2.0f, -0.5f,  1.0f, 0.0f, 0.0f,   // inferior esquerdo frontal
+    -2.0f, -0.5f, -1.0f, 1.0f, 0.0f,   // inferior direito frontal
+    -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
+    -2.0f,  0.0f,  1.0f, 1.0f, 1.0f,   // superior esquerdo frontal
+
+    // Face esquerda
+     2.0f, -0.5f,  1.0f,  0.0f, 0.0f,  // inferior esquerdo traseiro
+     2.0f,  0.0f,  1.0f,  1.0f, 0.0f,  // superior esquerdo traseiro
+    -2.0f,  0.0f,  1.0f,  1.0f, 1.0f,  // superior esquerdo frontal
+    -2.0f, -0.5f,  1.0f,  1.0f, 1.0f,  // inferior esquerdo frontal
+
+    // Face direita
+     2.0f, -0.5f, -1.0f, 0.0f, 0.0f,   // inferior direito traseiro
+     2.0f,  0.0f, -1.0f, 1.0f, 0.0f,   // superior direito traseiro
+    -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
+    -2.0f, -0.5f, -1.0f, 1.0f, 1.0f,   // inferior direito frontal
+
+    // Face inferior
+     2.0f, -0.5f,  1.0f, 0.0f, 0.0f,   // inferior esquerdo traseiro
+     2.0f, -0.5f, -1.0f, 1.0f, 0.0f,   // inferior direito traseiro
+    -2.0f, -0.5f, -1.0f, 1.0f, 1.0f,   // inferior direito frontal
+    -2.0f, -0.5f,  1.0f, 1.0f, 1.0f,   // inferior esquerdo frontal
+
+    // Face superior
+     2.0f,  0.0f,  1.0f, 0.0f, 0.0f,   // superior esquerdo traseiro
+     2.0f,  0.0f, -1.0f, 1.0f, 0.0f,   // superior direito traseiro
+    -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
+    -2.0f,  0.0f,  1.0f, 1.0f, 1.0f,   // superior esquerdo frontal
+
+    // Teto do carro (retângulo menor)
+     1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo traseiro
+     1.0f,  0.0f, -0.7f,  1.0f, 0.0f, // inferior direito traseiro
+     1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito traseiro
+     1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito traseiro
+     1.0f,  0.4f,  0.7f,  0.0f, 1.0f, // superior esquerdo traseiro
+     1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo traseiro
+
+    -1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo frontal
+    -1.0f,  0.0f, -0.7f,  1.0f, 0.0f, // inferior direito frontal
+    -1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito frontal
+    -1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito frontal
+    -1.0f,  0.4f,  0.7f,  0.0f, 1.0f, // superior esquerdo frontal
+    -1.0f,  0.0f,  0.7f,  0.0f, 0.0f  // inferior esquerdo frontal
+
+};
+
+// Função para mover o carro alterando as posições dos vértices
+void moverCarro(float* vertices, float velocidadeX, float velocidadeY, int numeroVertices) {
+    for (int i = 0; i < numeroVertices; i++) {
+        vertices[i * 5] += velocidadeX;     // Atualiza X do vértice
+        //vertices[i * 5 + 1] += velocidadeY; // Atualiza Y do vértice
+    }
+}
+
+/*void checkCarPosition() {
+
+    // Leia o pixel na posição do carro
+    glReadPixels(static_cast<int>(carX), static_cast<int>(carY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixelColor);
+
+    // Verifique a cor do pixel para determinar a posição
+    if (pixelColor[0] == 247 && pixelColor[1] == 247 && pixelColor[2] == 247) {
+        printf("O carro está fora da pista.");
+    } else {
+        std::cout << "O carro está dentro da pista!" << std::endl;
+    }
+}*/
 
 int main()
 {
@@ -30,6 +133,17 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    int numeroVertices = 60;
+
+    // Configuração de velocidade de movimento
+    float velocidadeX = 0.01f; // Movimento na direção X
+    float velocidadeY = 0.01f;  // Movimento na direção Y
+
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
 
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL : Corrida Maluca", NULL, NULL);
     if (window == NULL)
@@ -54,87 +168,6 @@ int main()
     Shader ourShader("vertex.glsl", "fragment.glsl");
     Shader carShader("vertex.glsl", "car_shader.glsl");
 
-    // Dados de vértices para o chão
-    float vertices[] = {
-        -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f,
-         100.0f,  -0.6f, -100.0f,  1.0f, 1.0f,
-         100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
-         100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
-        -100.0f,  -0.6f,  100.0f,  0.0f, 0.0f,
-        -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f
-    };
-
-    // Dados de vértices para o carro
-    float vertices_carro[] = {
-
-        // Corpo do carro (base retangular)
-         2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-         2.0f, -0.5f, -1.0f,  1.0f, 0.0f, // inferior direito traseiro
-         2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
-         2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
-         2.0f,  0.0f,  1.0f,  0.0f, 1.0f, // superior esquerdo traseiro
-         2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-
-        -2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-        -2.0f, -0.5f, -1.0f,  1.0f, 0.0f, // inferior direito frontal
-        -2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito frontal
-        -2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito frontal
-        -2.0f,  0.0f,  1.0f,  0.0f, 1.0f, // superior esquerdo frontal
-        -2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-
-        // Retângulo traseiro
-         2.0f, -0.5f,  1.0f, 0.0f, 0.0f, // inferior esquerdo traseiro
-         2.0f, -0.5f, -1.0f, 1.0f, 0.0f, // inferior direito traseiro
-         2.0f,  0.0f, -1.0f, 1.0f, 1.0f, // superior direito traseiro
-         2.0f,  0.0f,  1.0f, 1.0f, 1.0f, // superior esquerdo traseiro
-
-        // Retângulo frontal
-        -2.0f, -0.5f,  1.0f, 0.0f, 0.0f,   // inferior esquerdo frontal
-        -2.0f, -0.5f, -1.0f, 1.0f, 0.0f,   // inferior direito frontal
-        -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
-        -2.0f,  0.0f,  1.0f, 1.0f, 1.0f,   // superior esquerdo frontal
-
-        // Face esquerda
-         2.0f, -0.5f,  1.0f,  0.0f, 0.0f,  // inferior esquerdo traseiro
-         2.0f,  0.0f,  1.0f,  1.0f, 0.0f,  // superior esquerdo traseiro
-        -2.0f,  0.0f,  1.0f,  1.0f, 1.0f,  // superior esquerdo frontal
-        -2.0f, -0.5f,  1.0f,  1.0f, 1.0f,  // inferior esquerdo frontal
-
-        // Face direita
-         2.0f, -0.5f, -1.0f, 0.0f, 0.0f,   // inferior direito traseiro
-         2.0f,  0.0f, -1.0f, 1.0f, 0.0f,   // superior direito traseiro
-        -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
-        -2.0f, -0.5f, -1.0f, 1.0f, 1.0f,   // inferior direito frontal
-
-        // Face inferior
-         2.0f, -0.5f,  1.0f, 0.0f, 0.0f,   // inferior esquerdo traseiro
-         2.0f, -0.5f, -1.0f, 1.0f, 0.0f,   // inferior direito traseiro
-        -2.0f, -0.5f, -1.0f, 1.0f, 1.0f,   // inferior direito frontal
-        -2.0f, -0.5f,  1.0f, 1.0f, 1.0f,   // inferior esquerdo frontal
-
-        // Face superior
-         2.0f,  0.0f,  1.0f, 0.0f, 0.0f,   // superior esquerdo traseiro
-         2.0f,  0.0f, -1.0f, 1.0f, 0.0f,   // superior direito traseiro
-        -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
-        -2.0f,  0.0f,  1.0f, 1.0f, 1.0f,   // superior esquerdo frontal
-
-        // Teto do carro (retângulo menor)
-         1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo traseiro
-         1.0f,  0.0f, -0.7f,  1.0f, 0.0f, // inferior direito traseiro
-         1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito traseiro
-         1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito traseiro
-         1.0f,  0.4f,  0.7f,  0.0f, 1.0f, // superior esquerdo traseiro
-         1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo traseiro
-
-        -1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo frontal
-        -1.0f,  0.0f, -0.7f,  1.0f, 0.0f, // inferior direito frontal
-        -1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito frontal
-        -1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito frontal
-        -1.0f,  0.4f,  0.7f,  0.0f, 1.0f, // superior esquerdo frontal
-        -1.0f,  0.0f,  0.7f,  0.0f, 0.0f  // inferior esquerdo frontal
-
-    };
-
     GLuint VBOs[2], VAOs[2];
     glGenVertexArrays(2, VAOs);
     glGenBuffers(2, VBOs);
@@ -143,15 +176,6 @@ int main()
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    // Configuração do carro
-    glBindVertexArray(VAOs[1]);
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -167,7 +191,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load("res/images/pista_corrida.jpg", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("res/images/pista_nova.jpeg", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -194,6 +218,19 @@ int main()
 
     // Loop de renderização
     while (!glfwWindowShouldClose(window)) {
+
+        // Configuração do carro
+        glBindVertexArray(VAOs[1]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        // Mover o carro (atualizar posições dos vértices para a próxima execução)
+        moverCarro(vertices_carro, velocidadeX, velocidadeY, numeroVertices);
+
         processInput(window);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -204,7 +241,7 @@ int main()
 
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 120.0f);
 
         ourShader.use();
         glBindVertexArray(VAOs[0]);
