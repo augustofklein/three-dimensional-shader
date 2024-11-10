@@ -24,8 +24,8 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
-float velocidadeMovimentacao = 0.01f; // Movimento na direção X
-int numeroVertices = 60;
+float movingSpeed = 0.01f; // Movimento na direção X
+int numberVertices = 60;
 
 float carAngle = 0.0f; // Angulo de rotação inicial (em graus ou radianos)
 
@@ -40,7 +40,7 @@ float vertices[] = {
 };
 
 // Dados de vértices para o carro
-float vertices_carro[] = {
+float carVertices[] = {
 
     // Corpo do carro (base retangular)
      2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
@@ -131,11 +131,6 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL : Corrida Maluca", NULL, NULL);
     if (window == NULL)
     {
@@ -213,7 +208,7 @@ int main()
         // Configuração do carro
         glBindVertexArray(VAOs[1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_carro), vertices_carro, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(carVertices), carVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -246,7 +241,7 @@ int main()
         carShader.setMat4("projection", projection);
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices_carro) / (5 * sizeof(float)));
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(carVertices) / (5 * sizeof(float)));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -258,7 +253,7 @@ int main()
     return 0;
 }
 
-void viraCamera(float x, float y)
+void flipCamera(float x, float y)
 {
     yaw += x * sensitivity;
     pitch += y * sensitivity;
@@ -279,26 +274,26 @@ void viraCamera(float x, float y)
 
 // Funções para mover o carro alterando as posições dos vértices
 
-void moverCarroFrente(float* vertices, float velocidadeX, int numeroVertices) {
-    for (int i = 0; i < numeroVertices; i++) {
-        vertices[i * 5] -= velocidadeX * cos(glm::radians(carAngle));
-        vertices[i * 5 + 2] -= velocidadeX * cos(glm::radians(carAngle));
+void moveCarForward() {
+    for (int i = 0; i < numberVertices; i++) {
+        carVertices[i * 5] -= movingSpeed * cos(glm::radians(carAngle));
+        carVertices[i * 5 + 2] -= movingSpeed * cos(glm::radians(carAngle));
     }
 }
 
-void moverCarroTras(float* vertices, float velocidadeX, int numeroVertices) {
-    for (int i = 0; i < numeroVertices; i++) {
-        vertices[i * 5] += velocidadeX * cos(glm::radians(carAngle));
-        vertices[i * 5 + 2] += velocidadeX * cos(glm::radians(carAngle));
+void moveCarBackward() {
+    for (int i = 0; i < numberVertices; i++) {
+        carVertices[i * 5] += movingSpeed * cos(glm::radians(carAngle));
+        carVertices[i * 5 + 2] += movingSpeed * cos(glm::radians(carAngle));
     }
 }
 
-void moverCarroDireita() {
+void moveCarRight() {
     carAngle -= 0.10;
 }
 
 // Função para mover o carro alterando as posições dos vértices
-void moverCarroEsquerda() {
+void moveCarLeft() {
     carAngle += 0.10;
 }
 
@@ -325,16 +320,16 @@ void processInput(GLFWwindow *window)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-        viraCamera(0.0f, 1.0f);
+        flipCamera(0.0f, 1.0f);
 
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-        viraCamera(0.0f, -1.0f);
+        flipCamera(0.0f, -1.0f);
 
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-        viraCamera(-1.0f, 0.0f);
+        flipCamera(-1.0f, 0.0f);
 
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        viraCamera(1.0f, 0.0f);
+        flipCamera(1.0f, 0.0f);
 
      if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         cameraPos += glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
@@ -343,16 +338,16 @@ void processInput(GLFWwindow *window)
         cameraPos += glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed;
 
      if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-        moverCarroFrente(vertices_carro, velocidadeX, numeroVertices);
+        moveCarForward();
 
      if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-        moverCarroTras(vertices_carro, velocidadeX, numeroVertices);
+        moveCarBackward();
 
      if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-        moverCarroEsquerda();
+        moveCarLeft();
 
      if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
-        moverCarroDireita();
+        moveCarRight();
 
 }
 
