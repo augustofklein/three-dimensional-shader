@@ -24,6 +24,11 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
+float velocidadeMovimentacao = 0.01f; // Movimento na direção X
+int numeroVertices = 60;
+
+float carAngle = 0.0f; // Angulo de rotação inicial (em graus ou radianos)
+
 // Dados de vértices para o chão
 float vertices[] = {
     -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f,
@@ -105,14 +110,6 @@ float vertices_carro[] = {
 
 };
 
-// Função para mover o carro alterando as posições dos vértices
-void moverCarro(float* vertices, float velocidadeX, float velocidadeY, int numeroVertices) {
-    for (int i = 0; i < numeroVertices; i++) {
-        vertices[i * 5] += velocidadeX;     // Atualiza X do vértice
-        //vertices[i * 5 + 1] += velocidadeY; // Atualiza Y do vértice
-    }
-}
-
 /*void checkCarPosition() {
 
     // Leia o pixel na posição do carro
@@ -133,12 +130,6 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    int numeroVertices = 60;
-
-    // Configuração de velocidade de movimento
-    float velocidadeX = 0.01f; // Movimento na direção X
-    float velocidadeY = 0.01f;  // Movimento na direção Y
 
     unsigned int indices[] = {
         0, 1, 2,
@@ -228,9 +219,6 @@ int main()
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
 
-        // Mover o carro (atualizar posições dos vértices para a próxima execução)
-        moverCarro(vertices_carro, velocidadeX, velocidadeY, numeroVertices);
-
         processInput(window);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -251,7 +239,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (5 * sizeof(float)));
 
         glBindTexture(GL_TEXTURE_2D, texture2);
-        model = glm::translate(model, glm::vec3(-20.0f, 0.0f, 30.0f));
+        model = glm::translate(model, glm::vec3(15.0f, 0.0f, 72.0f));
 
         carShader.use();
         glBindVertexArray(VAOs[1]);
@@ -287,6 +275,31 @@ void viraCamera(float x, float y)
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(direction);
 
+}
+
+// Funções para mover o carro alterando as posições dos vértices
+
+void moverCarroFrente(float* vertices, float velocidadeX, int numeroVertices) {
+    for (int i = 0; i < numeroVertices; i++) {
+        vertices[i * 5] -= velocidadeX * cos(glm::radians(carAngle));
+        vertices[i * 5 + 2] -= velocidadeX * cos(glm::radians(carAngle));
+    }
+}
+
+void moverCarroTras(float* vertices, float velocidadeX, int numeroVertices) {
+    for (int i = 0; i < numeroVertices; i++) {
+        vertices[i * 5] += velocidadeX * cos(glm::radians(carAngle));
+        vertices[i * 5 + 2] += velocidadeX * cos(glm::radians(carAngle));
+    }
+}
+
+void moverCarroDireita() {
+    carAngle -= 0.10;
+}
+
+// Função para mover o carro alterando as posições dos vértices
+void moverCarroEsquerda() {
+    carAngle += 0.10;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -328,6 +341,18 @@ void processInput(GLFWwindow *window)
 
      if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
         cameraPos += glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed;
+
+     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+        moverCarroFrente(vertices_carro, velocidadeX, numeroVertices);
+
+     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+        moverCarroTras(vertices_carro, velocidadeX, numeroVertices);
+
+     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+        moverCarroEsquerda();
+
+     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+        moverCarroDireita();
 
 }
 
