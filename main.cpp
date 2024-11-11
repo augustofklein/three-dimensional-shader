@@ -24,7 +24,7 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
-float movingSpeed = 0.01f; // Movimento na direção X
+float movingSpeed = 0.05f; // Movimento na direção X
 int numberVertices = 60;
 
 float carAngle = 0.0f; // Angulo de rotação inicial (em graus ou radianos)
@@ -234,7 +234,8 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (5 * sizeof(float)));
 
         glBindTexture(GL_TEXTURE_2D, texture2);
-        model = glm::translate(model, glm::vec3(15.0f, 0.0f, 72.0f));
+        model = glm::translate(model, glm::vec3(15.0f, 0.0f, 72.0f));  // Translada o carro para a posição desejada
+        model = glm::rotate(model, glm::radians(carAngle), glm::vec3(0.0f, 1.0f, 0.0f));  // Roda o carro no seu próprio eixo
 
         carShader.use();
         glBindVertexArray(VAOs[1]);
@@ -277,24 +278,24 @@ void flipCamera(float x, float y)
 void moveCarForward() {
     for (int i = 0; i < numberVertices; i++) {
         carVertices[i * 5] -= movingSpeed * cos(glm::radians(carAngle));
-        carVertices[i * 5 + 2] -= movingSpeed * cos(glm::radians(carAngle));
+        carVertices[i * 5 + 2] -= movingSpeed * sin(glm::radians(carAngle));
     }
 }
 
 void moveCarBackward() {
     for (int i = 0; i < numberVertices; i++) {
         carVertices[i * 5] += movingSpeed * cos(glm::radians(carAngle));
-        carVertices[i * 5 + 2] += movingSpeed * cos(glm::radians(carAngle));
+        carVertices[i * 5 + 2] += movingSpeed * sin(glm::radians(carAngle));
     }
 }
 
 void moveCarRight() {
-    carAngle -= 0.10;
+    carAngle -= 0.02;
 }
 
 // Função para mover o carro alterando as posições dos vértices
 void moveCarLeft() {
-    carAngle += 0.10;
+    carAngle += 0.02;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
