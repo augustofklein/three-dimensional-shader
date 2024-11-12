@@ -39,76 +39,49 @@ float vertices[] = {
     -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f
 };
 
-// Dados de vértices para o carro
 float carVertices[] = {
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 
-    // Corpo do carro (base retangular)
-     2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
-     2.0f, -0.5f, -1.0f,  1.0f, 0.0f, // inferior direito traseiro
-     2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
-     2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito traseiro
-     2.0f,  0.0f,  1.0f,  0.0f, 1.0f, // superior esquerdo traseiro
-     2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo traseiro
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-    -2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
-    -2.0f, -0.5f, -1.0f,  1.0f, 0.0f, // inferior direito frontal
-    -2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito frontal
-    -2.0f,  0.0f, -1.0f,  1.0f, 1.0f, // superior direito frontal
-    -2.0f,  0.0f,  1.0f,  0.0f, 1.0f, // superior esquerdo frontal
-    -2.0f, -0.5f,  1.0f,  0.0f, 0.0f, // inferior esquerdo frontal
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-    // Retângulo traseiro
-     2.0f, -0.5f,  1.0f, 0.0f, 0.0f, // inferior esquerdo traseiro
-     2.0f, -0.5f, -1.0f, 1.0f, 0.0f, // inferior direito traseiro
-     2.0f,  0.0f, -1.0f, 1.0f, 1.0f, // superior direito traseiro
-     2.0f,  0.0f,  1.0f, 1.0f, 1.0f, // superior esquerdo traseiro
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
 
-    // Retângulo frontal
-    -2.0f, -0.5f,  1.0f, 0.0f, 0.0f,   // inferior esquerdo frontal
-    -2.0f, -0.5f, -1.0f, 1.0f, 0.0f,   // inferior direito frontal
-    -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
-    -2.0f,  0.0f,  1.0f, 1.0f, 1.0f,   // superior esquerdo frontal
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
 
-    // Face esquerda
-     2.0f, -0.5f,  1.0f,  0.0f, 0.0f,  // inferior esquerdo traseiro
-     2.0f,  0.0f,  1.0f,  1.0f, 0.0f,  // superior esquerdo traseiro
-    -2.0f,  0.0f,  1.0f,  1.0f, 1.0f,  // superior esquerdo frontal
-    -2.0f, -0.5f,  1.0f,  1.0f, 1.0f,  // inferior esquerdo frontal
-
-    // Face direita
-     2.0f, -0.5f, -1.0f, 0.0f, 0.0f,   // inferior direito traseiro
-     2.0f,  0.0f, -1.0f, 1.0f, 0.0f,   // superior direito traseiro
-    -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
-    -2.0f, -0.5f, -1.0f, 1.0f, 1.0f,   // inferior direito frontal
-
-    // Face inferior
-     2.0f, -0.5f,  1.0f, 0.0f, 0.0f,   // inferior esquerdo traseiro
-     2.0f, -0.5f, -1.0f, 1.0f, 0.0f,   // inferior direito traseiro
-    -2.0f, -0.5f, -1.0f, 1.0f, 1.0f,   // inferior direito frontal
-    -2.0f, -0.5f,  1.0f, 1.0f, 1.0f,   // inferior esquerdo frontal
-
-    // Face superior
-     2.0f,  0.0f,  1.0f, 0.0f, 0.0f,   // superior esquerdo traseiro
-     2.0f,  0.0f, -1.0f, 1.0f, 0.0f,   // superior direito traseiro
-    -2.0f,  0.0f, -1.0f, 1.0f, 1.0f,   // superior direito frontal
-    -2.0f,  0.0f,  1.0f, 1.0f, 1.0f,   // superior esquerdo frontal
-
-    // Teto do carro (retângulo menor)
-     1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo traseiro
-     1.0f,  0.0f, -0.7f,  1.0f, 0.0f, // inferior direito traseiro
-     1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito traseiro
-     1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito traseiro
-     1.0f,  0.4f,  0.7f,  0.0f, 1.0f, // superior esquerdo traseiro
-     1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo traseiro
-
-    -1.0f,  0.0f,  0.7f,  0.0f, 0.0f, // inferior esquerdo frontal
-    -1.0f,  0.0f, -0.7f,  1.0f, 0.0f, // inferior direito frontal
-    -1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito frontal
-    -1.0f,  0.4f, -0.7f,  1.0f, 1.0f, // superior direito frontal
-    -1.0f,  0.4f,  0.7f,  0.0f, 1.0f, // superior esquerdo frontal
-    -1.0f,  0.0f,  0.7f,  0.0f, 0.0f  // inferior esquerdo frontal
-
-};
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
 
 /*void checkCarPosition() {
 
