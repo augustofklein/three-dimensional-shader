@@ -14,9 +14,14 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1200;
 
-// Camera settings
-glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 5.37f);
-glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
+// Camera settings original
+//glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 5.37f);
+//glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
+//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
+
+// Posição para desenhar o carro
+glm::vec3 cameraPos = glm::vec3(13.80f, 3.80f, 60.67f);
+glm::vec3 cameraFront = glm::vec3(0.08f, -0.36f, 0.92f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 
 float sensitivity = 0.1f;
@@ -31,56 +36,56 @@ float carAngle = 0.0f; // Angulo de rotação inicial (em graus ou radianos)
 
 // Dados de vértices para o chão
 float vertices[] = {
-    -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f,
-     100.0f,  -0.6f, -100.0f,  1.0f, 1.0f,
-     100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
-     100.0f,  -0.6f,  100.0f,  1.0f, 0.0f,
-    -100.0f,  -0.6f,  100.0f,  0.0f, 0.0f,
-    -100.0f,  -0.6f, -100.0f,  0.0f, 1.0f
+    -50.0f,  -0.6f, -50.0f,  0.0f, 1.0f,
+     50.0f,  -0.6f, -50.0f,  1.0f, 1.0f,
+     50.0f,  -0.6f,  50.0f,  1.0f, 0.0f,
+     50.0f,  -0.6f,  50.0f,  1.0f, 0.0f,
+    -50.0f,  -0.6f,  50.0f,  0.0f, 0.0f,
+    -50.0f,  -0.6f, -50.0f,  0.0f, 1.0f
 };
 
 float carVertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 0.0f,
+         2.0f, -0.5f, -1.5f,  1.0f, 0.0f,
+         2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+        -2.0f,  0.5f, -1.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+         2.0f, -0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 1.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 1.0f,
+        -2.0f,  0.5f,  1.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+        -2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+        -2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f, -0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f, -0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f, -0.5f,  1.5f,  1.0f, 0.0f,
+        -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        -2.0f,  0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+        -2.0f,  0.5f,  1.5f,  0.0f, 0.0f,
+        -2.0f,  0.5f, -1.5f,  0.0f, 1.0f
     };
 
 /*void checkCarPosition() {
@@ -197,7 +202,7 @@ int main()
 
         glm::mat4 model = glm::mat4(1.0f);
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 120.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 220.0f);
 
         ourShader.use();
         glBindVertexArray(VAOs[0]);
@@ -207,8 +212,9 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (5 * sizeof(float)));
 
         glBindTexture(GL_TEXTURE_2D, texture2);
-        model = glm::translate(model, glm::vec3(15.0f, 0.0f, 72.0f));  // Translada o carro para a posição desejada
+        model = glm::translate(model, glm::vec3(8.0f, 0.0f, 35.0f));  // Translada o carro para a posição desejada
         model = glm::rotate(model, glm::radians(carAngle), glm::vec3(0.0f, 1.0f, 0.0f));  // Roda o carro no seu próprio eixo
+        //model = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         carShader.use();
         glBindVertexArray(VAOs[1]);
