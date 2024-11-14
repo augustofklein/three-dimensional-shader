@@ -15,14 +15,14 @@ const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1200;
 
 // Camera settings original
-//glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 5.37f);
-//glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
-//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
+glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 0.0f);
+glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 
 // Posição para desenhar o carro
-glm::vec3 cameraPos = glm::vec3(13.80f, 3.80f, 60.67f);
-glm::vec3 cameraFront = glm::vec3(0.08f, -0.36f, 0.92f);
-glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
+//glm::vec3 cameraPos = glm::vec3(13.80f, 3.80f, 60.67f);
+//glm::vec3 cameraFront = glm::vec3(0.08f, -0.36f, 0.92f);
+//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 
 float sensitivity = 0.1f;
 float yaw = -90.0f;
@@ -45,6 +45,7 @@ float vertices[] = {
 };
 
 float carVertices[] = {
+        // Base inferior
         -2.0f, -0.5f, -1.5f,  0.0f, 0.0f,
          2.0f, -0.5f, -1.5f,  1.0f, 0.0f,
          2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
@@ -58,6 +59,49 @@ float carVertices[] = {
          2.0f,  0.5f,  1.5f,  1.0f, 1.0f,
         -2.0f,  0.5f,  1.5f,  0.0f, 1.0f,
         -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+
+        -2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+        -2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+        -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+        -2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f, -0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f, -0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f, -0.5f,  1.5f,  1.0f, 0.0f,
+        -2.0f, -0.5f,  1.5f,  0.0f, 0.0f,
+        -2.0f, -0.5f, -1.5f,  0.0f, 1.0f,
+
+        -2.0f,  0.5f, -1.5f,  0.0f, 1.0f,
+         2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+         2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
+        -2.0f,  0.5f,  1.5f,  0.0f, 0.0f,
+        -2.0f,  0.5f, -1.5f,  0.0f, 1.0f,
+
+        // Base superior
+        -2.0f, -1.5f, -1.5f,  0.0f, 0.0f,
+         2.0f, -1.5f, -1.5f,  1.0f, 0.0f,
+         2.0f,  1.5f, -1.5f,  1.0f, 1.0f,
+         2.0f,  1.5f, -1.5f,  1.0f, 1.0f,
+        -2.0f,  1.5f, -1.5f,  0.0f, 1.0f,
+        -2.0f, -1.5f, -1.5f,  0.0f, 0.0f,
+
+        -2.0f, -1.5f,  1.5f,  0.0f, 0.0f,
+         2.0f, -1.5f,  1.5f,  1.0f, 0.0f,
+         2.0f,  1.5f,  1.5f,  1.0f, 1.0f,
+         2.0f,  1.5f,  1.5f,  1.0f, 1.0f,
+        -2.0f,  1.5f,  1.5f,  0.0f, 1.0f,
+        -2.0f, -1.5f,  1.5f,  0.0f, 0.0f,
 
         -2.0f,  0.5f,  1.5f,  1.0f, 0.0f,
         -2.0f,  0.5f, -1.5f,  1.0f, 1.0f,
