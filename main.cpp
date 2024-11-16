@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <Shader.h>
 #include <iostream>
+#include <vector>
 
 /*
     TODOS: ROTACIONAR O CARRO EM TODAS AS DIRECOES;
@@ -39,6 +40,31 @@ float movingSpeed = 0.05f;
 int numberVertices = 60;
 
 float carAngle = 0.0f;
+
+std::vector<float> originalVertices;
+
+// Estrutura para manter o estado do carro
+struct CarState {
+    glm::vec3 position;     // Posição atual do carro
+    float angle;            // Ângulo de rotação em graus
+    float speed;            // Velocidade atual
+    float acceleration;     // Aceleração
+    float maxSpeed;         // Velocidade máxima
+    float turnSpeed;        // Velocidade de rotação
+    float friction;         // Fator de fricção
+
+    CarState() {
+        position = glm::vec3(0.0f);
+        angle = 0.0f;
+        speed = 0.0f;
+        acceleration = 0.02f;
+        maxSpeed = 0.01f;
+        turnSpeed = 0.08f;
+        friction = 0.98f;
+    }
+};
+
+CarState carState;
 
 // Dados de vértices para o chão
 float vertices[] = {
@@ -292,26 +318,95 @@ void flipCamera(float x, float y)
     cameraFront = glm::normalize(direction);
 }
 
-void moveCarForward() {
-    for (int i = 0; i < numberVertices; i++) {
-        carVertices[i * 5] -= movingSpeed * cos(glm::radians(carAngle));
-        carVertices[i * 5 + 2] -= movingSpeed * sin(glm::radians(carAngle));
+// Função de inicialização para configurar os vértices originais
+void initializeCarVertices() {
+    originalVertices.assign(carVertices, carVertices + sizeof(carVertices)/sizeof(float));
+}
+
+// Função updateCarVertices atualizada
+void updateCarVertices() {
+    // Verifica se os vértices originais foram inicializados
+    if (originalVertices.empty()) {
+        initializeCarVertices();
     }
+
+    glm::mat4 transform = glm::mat4(1.0f);
+    transform = glm::translate(transform, carState.position);
+    transform = glm::rotate(transform, glm::radians(carState.angle), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    for (int i = 0; i < numberVertices; i++) {
+        glm::vec4 vertex(
+            originalVertices[i * 5],     // x
+            originalVertices[i * 5 + 1], // y
+            originalVertices[i * 5 + 2], // z
+            1.0f
+        );
+
+        // Aplica a transformação
+        glm::vec4 transformed = transform * vertex;
+
+        // Atualiza os vértices
+        carVertices[i * 5] = transformed.x;
+        carVertices[i * 5 + 1] = transformed.y;
+        carVertices[i * 5 + 2] = transformed.z;
+        // Mantém as coordenadas de textura inalteradas
+        carVertices[i * 5 + 3] = originalVertices[i * 5 + 3];
+        carVertices[i * 5 + 4] = originalVertices[i * 5 + 4];
+    }
+}
+
+// Funções de movimento atualizadas
+void moveCarForward() {
+    float deltaSpeed = carState.acceleration;
+    carState.speed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
+
+    // Atualiza a posição baseado na direção atual
+    float angleRad = glm::radians(carState.angle);
+    carState.position.x += carState.speed * cos(angleRad);  // Trocado sin por cos
+    carState.position.z -= carState.speed * sin(angleRad);  // Trocado cos por sin e invertido sinal
+
+    updateCarVertices();
 }
 
 void moveCarBackward() {
-    for (int i = 0; i < numberVertices; i++) {
-        carVertices[i * 5] += movingSpeed * cos(glm::radians(carAngle));
-        carVertices[i * 5 + 2] += movingSpeed * sin(glm::radians(carAngle));
-    }
+    float deltaSpeed = carState.acceleration;
+    carState.speed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
+
+    // Atualiza a posição baseado na direção atual
+    float angleRad = glm::radians(carState.angle);
+    carState.position.x += carState.speed * cos(angleRad);  // Trocado sin por cos
+    carState.position.z -= carState.speed * sin(angleRad);  // Trocado cos por sin e invertido sinal
+
+    updateCarVertices();
 }
 
 void moveCarRight() {
-    carAngle -= 0.02;
+    carState.angle -= carState.turnSpeed * (carState.speed != 0 ? 1.0f : 0.0f);
+    updateCarVertices();
 }
 
 void moveCarLeft() {
-    carAngle += 0.02;
+    carState.angle += carState.turnSpeed * (carState.speed != 0 ? 1.0f : 0.0f);
+    updateCarVertices();
+}
+
+// Função para aplicar fricção e atualizar o estado do carro
+void updateCarPhysics() {
+    // Aplica fricção
+    if (carState.speed != 0.0f) {
+        carState.speed *= carState.friction;
+
+        // Se a velocidade for muito pequena, pare completamente
+        if (std::abs(carState.speed) < 0.001f) {
+            carState.speed = 0.0f;
+        } else {
+            // Continua o movimento na direção atual
+            float angleRad = glm::radians(carState.angle);
+            carState.position.x -= carState.speed * sin(angleRad);
+            carState.position.z -= carState.speed * cos(angleRad);
+            updateCarVertices();
+        }
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
