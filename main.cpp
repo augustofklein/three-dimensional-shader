@@ -64,6 +64,25 @@ struct CarState {
     }
 };
 
+// Estrutura para representar uma cor RGB
+struct Color {
+    unsigned char r, g, b;
+
+    bool isYellow() const {
+        // Valores aproximados para amarelo (pode precisar ajustar)
+        return r > 200 && g > 200 && b < 100;
+    }
+
+    bool isGreen() const {
+        // Valores aproximados para verde (pode precisar ajustar)
+        return r < 100 && g > 200 && b < 100;
+    }
+
+    bool isObstacle() const {
+        return isYellow() || isGreen();
+    }
+};
+
 CarState carState;
 
 // Dados de vértices para o chão
@@ -318,6 +337,50 @@ void flipCamera(float x, float y)
     cameraFront = glm::normalize(direction);
 }
 
+/*
+// Função para ler a cor do pixel em uma posição específica
+Color getPixelColor(float x, float z) {
+    // Converte as coordenadas do mundo para coordenadas de tela
+    glm::vec4 worldPos = glm::vec4(x, 0.0f, z, 1.0f);
+    glm::vec4 clipSpace = projection * view * glm::mat4(1.0f) * worldPos;
+
+    // Divide por w para obter coordenadas normalizadas
+    clipSpace /= clipSpace.w;
+
+    // Converte para coordenadas de tela
+    int screenX = (clipSpace.x + 1.0f) * SCR_WIDTH / 2.0f;
+    int screenY = (clipSpace.y + 1.0f) * SCR_HEIGHT / 2.0f;
+
+    // Lê a cor do pixel
+    Color pixel;
+    glReadPixels(screenX, screenY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel);
+
+    return pixel;
+}
+*/
+
+// Função para verificar se há colisão na próxima posição
+bool checkCollision(const glm::vec3& nextPosition) {
+    // Pontos de verificação ao redor do carro
+    const float checkRadius = 1.0f;  // Ajuste conforme o tamanho do seu carro
+    const int numPoints = 8;  // Número de pontos a verificar
+
+    for (int i = 0; i < numPoints; i++) {
+        float angle = (2.0f * glm::pi<float>() * i) / numPoints;
+        float checkX = nextPosition.x + cos(angle) * checkRadius;
+        float checkZ = nextPosition.z + sin(angle) * checkRadius;
+
+        /*
+        Color pixelColor = getPixelColor(checkX, checkZ);
+        if (pixelColor.isObstacle()) {
+            return true;  // Colisão detectada
+        }
+        */
+    }
+
+    return false;  // Sem colisão
+}
+
 // Função de inicialização para configurar os vértices originais
 void initializeCarVertices() {
     originalVertices.assign(carVertices, carVertices + sizeof(carVertices)/sizeof(float));
@@ -355,29 +418,46 @@ void updateCarVertices() {
     }
 }
 
-// Funções de movimento atualizadas
 void moveCarForward() {
     float deltaSpeed = carState.acceleration;
-    carState.speed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
+    float newSpeed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
 
-    // Atualiza a posição baseado na direção atual
+    // Calcula a próxima posição
     float angleRad = glm::radians(carState.angle);
-    carState.position.x += carState.speed * cos(angleRad);  // Trocado sin por cos
-    carState.position.z -= carState.speed * sin(angleRad);  // Trocado cos por sin e invertido sinal
+    glm::vec3 nextPosition = carState.position;
+    nextPosition.x += newSpeed * cos(angleRad);
+    nextPosition.z -= newSpeed * sin(angleRad);
 
-    updateCarVertices();
+    // Verifica colisão antes de mover
+    if (!checkCollision(nextPosition)) {
+        carState.speed = newSpeed;
+        carState.position = nextPosition;
+        updateCarVertices();
+    } else {
+        // Em caso de colisão, para o carro
+        carState.speed = 0.0f;
+    }
 }
 
 void moveCarBackward() {
     float deltaSpeed = carState.acceleration;
-    carState.speed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
+    float newSpeed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
 
-    // Atualiza a posição baseado na direção atual
+    // Calcula a próxima posição
     float angleRad = glm::radians(carState.angle);
-    carState.position.x += carState.speed * cos(angleRad);  // Trocado sin por cos
-    carState.position.z -= carState.speed * sin(angleRad);  // Trocado cos por sin e invertido sinal
+    glm::vec3 nextPosition = carState.position;
+    nextPosition.x += newSpeed * cos(angleRad);
+    nextPosition.z -= newSpeed * sin(angleRad);
 
-    updateCarVertices();
+    // Verifica colisão antes de mover
+    if (!checkCollision(nextPosition)) {
+        carState.speed = newSpeed;
+        carState.position = nextPosition;
+        updateCarVertices();
+    } else {
+        // Em caso de colisão, para o carro
+        carState.speed = 0.0f;
+    }
 }
 
 void moveCarRight() {
@@ -392,19 +472,23 @@ void moveCarLeft() {
 
 // Função para aplicar fricção e atualizar o estado do carro
 void updateCarPhysics() {
-    // Aplica fricção
     if (carState.speed != 0.0f) {
         carState.speed *= carState.friction;
 
-        // Se a velocidade for muito pequena, pare completamente
         if (std::abs(carState.speed) < 0.001f) {
             carState.speed = 0.0f;
         } else {
-            // Continua o movimento na direção atual
             float angleRad = glm::radians(carState.angle);
-            carState.position.x -= carState.speed * sin(angleRad);
-            carState.position.z -= carState.speed * cos(angleRad);
-            updateCarVertices();
+            glm::vec3 nextPosition = carState.position;
+            nextPosition.x += carState.speed * cos(angleRad);
+            nextPosition.z -= carState.speed * sin(angleRad);
+
+            if (!checkCollision(nextPosition)) {
+                carState.position = nextPosition;
+                updateCarVertices();
+            } else {
+                carState.speed = 0.0f;
+            }
         }
     }
 }
