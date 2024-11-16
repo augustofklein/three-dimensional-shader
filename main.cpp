@@ -358,7 +358,7 @@ void updateCarVertices() {
 // Funções de movimento atualizadas
 void moveCarForward() {
     float deltaSpeed = carState.acceleration;
-    carState.speed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
+    carState.speed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
 
     // Atualiza a posição baseado na direção atual
     float angleRad = glm::radians(carState.angle);
@@ -370,7 +370,7 @@ void moveCarForward() {
 
 void moveCarBackward() {
     float deltaSpeed = carState.acceleration;
-    carState.speed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
+    carState.speed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
 
     // Atualiza a posição baseado na direção atual
     float angleRad = glm::radians(carState.angle);
