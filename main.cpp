@@ -7,6 +7,12 @@
 #include <Shader.h>
 #include <iostream>
 
+/*
+    TODOS: ROTACIONAR O CARRO EM TODAS AS DIRECOES;
+           APLICAR SHADER NAS FACES DO CARRO;
+           VERIFICAR O PIXEL QUE O CARRO ESTA PASSANDO;
+*/
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
@@ -29,10 +35,10 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
-float movingSpeed = 0.05f; // Movimento na direção X
+float movingSpeed = 0.05f;
 int numberVertices = 60;
 
-float carAngle = 0.0f; // Angulo de rotação inicial (em graus ou radianos)
+float carAngle = 0.0f;
 
 // Dados de vértices para o chão
 float vertices[] = {
@@ -118,40 +124,6 @@ float carVertices[] = {
      0.5f, 1.2f,  0.6f,   1.0f, 1.0f,
     -0.3f, 1.2f,  0.6f,   0.0f, 1.0f,
     -0.3f, 1.2f, -0.6f,   0.0f, 0.0f,
-    /*
-    // Wheels
-    // Front-left wheel
-    -1.5f, 0.0f, -0.9f,   0.0f, 0.0f,
-    -1.0f, 0.0f, -0.9f,   1.0f, 0.0f,
-    -1.0f, 0.4f, -0.9f,   1.0f, 1.0f,
-    -1.0f, 0.4f, -0.9f,   1.0f, 1.0f,
-    -1.5f, 0.4f, -0.9f,   0.0f, 1.0f,
-    -1.5f, 0.0f, -0.9f,   0.0f, 0.0f,
-
-    // Front-right wheel
-    -1.5f, 0.0f,  0.9f,   0.0f, 0.0f,
-    -1.0f, 0.0f,  0.9f,   1.0f, 0.0f,
-    -1.0f, 0.4f,  0.9f,   1.0f, 1.0f,
-    -1.0f, 0.4f,  0.9f,   1.0f, 1.0f,
-    -1.5f, 0.4f,  0.9f,   0.0f, 1.0f,
-    -1.5f, 0.0f,  0.9f,   0.0f, 0.0f,
-
-    // Back-left wheel
-     1.0f, 0.0f, -0.9f,   0.0f, 0.0f,
-     1.5f, 0.0f, -0.9f,   1.0f, 0.0f,
-     1.5f, 0.4f, -0.9f,   1.0f, 1.0f,
-     1.5f, 0.4f, -0.9f,   1.0f, 1.0f,
-     1.0f, 0.4f, -0.9f,   0.0f, 1.0f,
-     1.0f, 0.0f, -0.9f,   0.0f, 0.0f,
-
-    // Back-right wheel
-     1.0f, 0.0f,  0.9f,   0.0f, 0.0f,
-     1.5f, 0.0f,  0.9f,   1.0f, 0.0f,
-     1.5f, 0.4f,  0.9f,   1.0f, 1.0f,
-     1.5f, 0.4f,  0.9f,   1.0f, 1.0f,
-     1.0f, 0.4f,  0.9f,   0.0f, 1.0f,
-     1.0f, 0.0f,  0.9f,   0.0f, 0.0f
-     */
 };
 
 /*void checkCarPosition() {
@@ -169,7 +141,6 @@ float carVertices[] = {
 
 int main()
 {
-    // GLFW: initialize and configure
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -194,7 +165,6 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    // Shaders para chão e carro
     Shader ourShader("vertex.glsl", "fragment.glsl");
     Shader carShader("vertex.glsl", "car_shader.glsl");
 
@@ -202,7 +172,6 @@ int main()
     glGenVertexArrays(2, VAOs);
     glGenBuffers(2, VBOs);
 
-    // Configuração do chão
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -211,8 +180,9 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // Texturas
     unsigned int texture1, texture2;
+    unsigned char *data;
+
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -221,10 +191,13 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load("res/images/pista_nova.jpeg", &width, &height, &nrChannels, 0);
+
+    data = stbi_load("res/images/pista_nova.jpeg", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
 
@@ -238,15 +211,17 @@ int main()
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
 
     ourShader.use();
     ourShader.setInt("texture1", 0);
+
     carShader.use();
     carShader.setInt("texture2", 0);
 
-    // Loop de renderização
     while (!glfwWindowShouldClose(window)) {
 
         // Configuração do carro
@@ -277,10 +252,10 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (5 * sizeof(float)));
 
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture2);
         model = glm::translate(model, glm::vec3(8.0f, 0.0f, 35.0f));  // Translada o carro para a posição desejada
         model = glm::rotate(model, glm::radians(carAngle), glm::vec3(0.0f, 1.0f, 0.0f));  // Roda o carro no seu próprio eixo
-        //model = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
         carShader.use();
         glBindVertexArray(VAOs[1]);
@@ -315,10 +290,7 @@ void flipCamera(float x, float y)
     direction.y = sin(glm::radians(pitch));
     direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
     cameraFront = glm::normalize(direction);
-
 }
-
-// Funções para mover o carro alterando as posições dos vértices
 
 void moveCarForward() {
     for (int i = 0; i < numberVertices; i++) {
@@ -338,7 +310,6 @@ void moveCarRight() {
     carAngle -= 0.02;
 }
 
-// Função para mover o carro alterando as posições dos vértices
 void moveCarLeft() {
     carAngle += 0.02;
 }
@@ -352,17 +323,16 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-     // ajustar de acordo com a velocidade do computador
-     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
 
-     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
         cameraPos -= cameraSpeed * cameraFront;
 
-     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
-     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
@@ -377,33 +347,28 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
         flipCamera(1.0f, 0.0f);
 
-     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
         cameraPos += glm::vec3(0.0f, 1.0f, 0.0f) * cameraSpeed;
 
-     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
         cameraPos += glm::vec3(0.0f, -1.0f, 0.0f) * cameraSpeed;
 
-     if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
         moveCarForward();
 
-     if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
         moveCarBackward();
 
-     if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
         moveCarLeft();
 
-     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
         moveCarRight();
-
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
-
