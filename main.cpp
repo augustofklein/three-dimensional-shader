@@ -57,7 +57,7 @@ struct CarState {
         position = glm::vec3(0.0f);
         angle = 0.0f;
         speed = 0.0f;
-        acceleration = 0.02f;
+        acceleration = 0.05f;
         maxSpeed = 0.01f;
         turnSpeed = 0.08f;
         friction = 0.98f;
@@ -69,13 +69,11 @@ struct Color {
     unsigned char r, g, b;
 
     bool isYellow() const {
-        // Valores aproximados para amarelo (pode precisar ajustar)
-        return r > 200 && g > 200 && b < 100;
+        return r == 8 && g == 109 && b == 5;
     }
 
     bool isGreen() const {
-        // Valores aproximados para verde (pode precisar ajustar)
-        return r < 100 && g > 200 && b < 100;
+        return r == 251 && g == 203 && b == 9;
     }
 
     bool isObstacle() const {
@@ -171,19 +169,6 @@ float carVertices[] = {
     -0.3f, 1.2f, -0.6f,   0.0f, 0.0f,
 };
 
-/*void checkCarPosition() {
-
-    // Leia o pixel na posição do carro
-    glReadPixels(static_cast<int>(carX), static_cast<int>(carY), 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixelColor);
-
-    // Verifique a cor do pixel para determinar a posição
-    if (pixelColor[0] == 247 && pixelColor[1] == 247 && pixelColor[2] == 247) {
-        printf("O carro está fora da pista.");
-    } else {
-        std::cout << "O carro está dentro da pista!" << std::endl;
-    }
-}*/
-
 int main()
 {
     glfwInit();
@@ -252,7 +237,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    data = stbi_load("res/images/opengl.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("res/images/car_texture.png", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -357,14 +342,14 @@ Color getPixelColor(float x, float z) {
 }
 
 bool checkCollision(const glm::vec3& nextPosition) {
-    // Pontos de verificação ao redor do carro
-    const float checkRadius = 1.0f;  // Ajuste conforme o tamanho do seu carro
-    const int numPoints = 8;  // Número de pontos a verificar
+    const float checkRadius = 1.0f;
 
-    for (int i = 0; i < numPoints; i++) {
-        float angle = (2.0f * glm::pi<float>() * i) / numPoints;
+    for (int i = 0; i < numberVertices; i++) {
+        float angle = (2.0f * glm::pi<float>() * i) / numberVertices;
         float checkX = nextPosition.x + cos(angle) * checkRadius;
         float checkZ = nextPosition.z + sin(angle) * checkRadius;
+
+        printf("%d %d\n", checkX, checkZ);
 
         Color pixelColor = getPixelColor(checkX, checkZ);
         if (pixelColor.isObstacle()) {
