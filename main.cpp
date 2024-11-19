@@ -21,6 +21,9 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1200;
 
+glm::mat4 view;
+glm::mat4 projection;
+
 // Camera settings original
 glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 0.0f);
 glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
@@ -36,10 +39,7 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
-float movingSpeed = 0.05f;
 int numberVertices = 60;
-
-float carAngle = 0.0f;
 
 std::vector<float> originalVertices;
 
@@ -287,8 +287,8 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
 
         glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-        glm::mat4 projection = glm::perspective(glm::radians(70.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 220.0f);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        projection = glm::perspective(glm::radians(70.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 220.0f);
 
         ourShader.use();
         glBindVertexArray(VAOs[0]);
@@ -299,8 +299,7 @@ int main()
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture2);
-        model = glm::translate(model, glm::vec3(8.0f, 0.0f, 35.0f));  // Translada o carro para a posição desejada
-        model = glm::rotate(model, glm::radians(carAngle), glm::vec3(0.0f, 1.0f, 0.0f));  // Roda o carro no seu próprio eixo
+        model = glm::translate(model, glm::vec3(8.0f, 0.0f, 35.0f));
 
         carShader.use();
         glBindVertexArray(VAOs[1]);
@@ -337,7 +336,6 @@ void flipCamera(float x, float y)
     cameraFront = glm::normalize(direction);
 }
 
-/*
 // Função para ler a cor do pixel em uma posição específica
 Color getPixelColor(float x, float z) {
     // Converte as coordenadas do mundo para coordenadas de tela
@@ -357,9 +355,7 @@ Color getPixelColor(float x, float z) {
 
     return pixel;
 }
-*/
 
-// Função para verificar se há colisão na próxima posição
 bool checkCollision(const glm::vec3& nextPosition) {
     // Pontos de verificação ao redor do carro
     const float checkRadius = 1.0f;  // Ajuste conforme o tamanho do seu carro
@@ -370,15 +366,13 @@ bool checkCollision(const glm::vec3& nextPosition) {
         float checkX = nextPosition.x + cos(angle) * checkRadius;
         float checkZ = nextPosition.z + sin(angle) * checkRadius;
 
-        /*
         Color pixelColor = getPixelColor(checkX, checkZ);
         if (pixelColor.isObstacle()) {
-            return true;  // Colisão detectada
+            return true;
         }
-        */
     }
 
-    return false;  // Sem colisão
+    return false;
 }
 
 // Função de inicialização para configurar os vértices originais
