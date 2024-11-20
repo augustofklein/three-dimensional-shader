@@ -29,7 +29,7 @@ glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 0.0f);
 glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 
-// Posição para desenhar o carro
+// Posiï¿½ï¿½o para desenhar o carro
 //glm::vec3 cameraPos = glm::vec3(13.80f, 3.80f, 60.67f);
 //glm::vec3 cameraFront = glm::vec3(0.08f, -0.36f, 0.92f);
 //glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
@@ -45,13 +45,13 @@ std::vector<float> originalVertices;
 
 // Estrutura para manter o estado do carro
 struct CarState {
-    glm::vec3 position;     // Posição atual do carro
-    float angle;            // Ângulo de rotação em graus
+    glm::vec3 position;     // Posiï¿½ï¿½o atual do carro
+    float angle;            // ï¿½ngulo de rotaï¿½ï¿½o em graus
     float speed;            // Velocidade atual
-    float acceleration;     // Aceleração
-    float maxSpeed;         // Velocidade máxima
-    float turnSpeed;        // Velocidade de rotação
-    float friction;         // Fator de fricção
+    float acceleration;     // Aceleraï¿½ï¿½o
+    float maxSpeed;         // Velocidade mï¿½xima
+    float turnSpeed;        // Velocidade de rotaï¿½ï¿½o
+    float friction;         // Fator de fricï¿½ï¿½o
 
     CarState() {
         position = glm::vec3(0.0f);
@@ -83,7 +83,7 @@ struct Color {
 
 CarState carState;
 
-// Dados de vértices para o chão
+// Dados de vï¿½rtices para o chï¿½o
 float vertices[] = {
     -50.0f,  -0.6f, -50.0f,  0.0f, 1.0f,
      50.0f,  -0.6f, -50.0f,  1.0f, 1.0f,
@@ -199,7 +199,7 @@ float carVertices[] = {
      0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top (roof)
      0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top (roof)
     -0.3f, 1.2f,  0.6f,   0.0f, 1.0f, // Top (roof)
-    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f, // Bottom-left (back windshield)
+    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f, // Bottom-left (backï¿½windshield)
 
 };
 
@@ -289,7 +289,7 @@ int main()
 
     while (!glfwWindowShouldClose(window)) {
 
-        // Configuração do carro
+        // Configuraï¿½ï¿½o do carro
         glBindVertexArray(VAOs[1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(carVertices), carVertices, GL_STATIC_DRAW);
@@ -356,7 +356,7 @@ void flipCamera(float x, float y)
     cameraFront = glm::normalize(direction);
 }
 
-// Função para ler a cor do pixel em uma posição específica
+// Funï¿½ï¿½o para ler a cor do pixel em uma posiï¿½ï¿½o especï¿½fica
 Color getPixelColor(float x, float z) {
     // Converte as coordenadas do mundo para coordenadas de tela
     glm::vec4 worldPos = glm::vec4(x, 0.0f, z, 1.0f);
@@ -369,7 +369,7 @@ Color getPixelColor(float x, float z) {
     int screenX = (clipSpace.x + 1.0f) * SCR_WIDTH / 2.0f;
     int screenY = (clipSpace.y + 1.0f) * SCR_HEIGHT / 2.0f;
 
-    // Lê a cor do pixel
+    // Lï¿½ a cor do pixel
     Color pixel;
     glReadPixels(screenX, screenY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel);
 
@@ -393,14 +393,14 @@ bool checkCollision(const glm::vec3& nextPosition) {
     return false;
 }
 
-// Função de inicialização para configurar os vértices originais
+// Funï¿½ï¿½o de inicializaï¿½ï¿½o para configurar os vï¿½rtices originais
 void initializeCarVertices() {
     originalVertices.assign(carVertices, carVertices + sizeof(carVertices)/sizeof(float));
 }
 
-// Função updateCarVertices atualizada
+// Funï¿½ï¿½o updateCarVertices atualizada
 void updateCarVertices() {
-    // Verifica se os vértices originais foram inicializados
+    // Verifica se os vï¿½rtices originais foram inicializados
     if (originalVertices.empty()) {
         initializeCarVertices();
     }
@@ -417,14 +417,14 @@ void updateCarVertices() {
             1.0f
         );
 
-        // Aplica a transformação
+        // Aplica a transformaï¿½ï¿½o
         glm::vec4 transformed = transform * vertex;
 
-        // Atualiza os vértices
+        // Atualiza os vï¿½rtices
         carVertices[i * 5] = transformed.x;
         carVertices[i * 5 + 1] = transformed.y;
         carVertices[i * 5 + 2] = transformed.z;
-        // Mantém as coordenadas de textura inalteradas
+        // Mantï¿½m as coordenadas de textura inalteradas
         carVertices[i * 5 + 3] = originalVertices[i * 5 + 3];
         carVertices[i * 5 + 4] = originalVertices[i * 5 + 4];
     }
@@ -434,19 +434,19 @@ void moveCarForward() {
     float deltaSpeed = carState.acceleration;
     float newSpeed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
 
-    // Calcula a próxima posição
+    // Calcula a prï¿½xima posiï¿½ï¿½o
     float angleRad = glm::radians(carState.angle);
     glm::vec3 nextPosition = carState.position;
     nextPosition.x += newSpeed * cos(angleRad);
     nextPosition.z -= newSpeed * sin(angleRad);
 
-    // Verifica colisão antes de mover
+    // Verifica colisï¿½o antes de mover
     if (!checkCollision(nextPosition)) {
         carState.speed = newSpeed;
         carState.position = nextPosition;
         updateCarVertices();
     } else {
-        // Em caso de colisão, para o carro
+        // Em caso de colisï¿½o, para o carro
         carState.speed = 0.0f;
     }
 }
@@ -455,19 +455,19 @@ void moveCarBackward() {
     float deltaSpeed = carState.acceleration;
     float newSpeed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
 
-    // Calcula a próxima posição
+    // Calcula a prï¿½xima posiï¿½ï¿½o
     float angleRad = glm::radians(carState.angle);
     glm::vec3 nextPosition = carState.position;
     nextPosition.x += newSpeed * cos(angleRad);
     nextPosition.z -= newSpeed * sin(angleRad);
 
-    // Verifica colisão antes de mover
+    // Verifica colisï¿½o antes de mover
     if (!checkCollision(nextPosition)) {
         carState.speed = newSpeed;
         carState.position = nextPosition;
         updateCarVertices();
     } else {
-        // Em caso de colisão, para o carro
+        // Em caso de colisï¿½o, para o carro
         carState.speed = 0.0f;
     }
 }
@@ -482,7 +482,7 @@ void moveCarLeft() {
     updateCarVertices();
 }
 
-// Função para aplicar fricção e atualizar o estado do carro
+// Funï¿½ï¿½o para aplicar fricï¿½ï¿½o e atualizar o estado do carro
 void updateCarPhysics() {
     if (carState.speed != 0.0f) {
         carState.speed *= carState.friction;
