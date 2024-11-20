@@ -39,7 +39,7 @@ float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
-int numberVertices = 60;
+int numberVertices = 80;
 
 std::vector<float> originalVertices;
 
@@ -167,6 +167,40 @@ float carVertices[] = {
      0.5f, 1.2f,  0.6f,   1.0f, 1.0f,
     -0.3f, 1.2f,  0.6f,   0.0f, 1.0f,
     -0.3f, 1.2f, -0.6f,   0.0f, 0.0f,
+
+    // Upper part closure
+    // Left side (connect front and back windshields to the roof)
+    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
+    -0.5f, 0.6f,  0.7f,   1.0f, 0.0f, // Bottom-left (back windshield)
+    -0.3f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-left (roof)
+    -0.3f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-left (roof)
+    -0.3f, 1.2f, -0.6f,   0.0f, 1.0f, // Top-left (roof)
+    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
+
+    // Right side (connect front and back windshields to the roof)
+     0.8f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-right (front windshield)
+     0.8f, 0.6f,  0.7f,   1.0f, 0.0f, // Bottom-right (back windshield)
+     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-right (roof)
+     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-right (roof)
+     0.5f, 1.2f, -0.6f,   0.0f, 1.0f, // Top-right (roof)
+     0.8f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-right (front windshield)
+
+     // Front edge (connect front windshield to roof)
+    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
+     0.8f, 0.6f, -0.7f,   1.0f, 0.0f, // Bottom-right (front windshield)
+     0.5f, 1.2f, -0.6f,   1.0f, 1.0f, // Top (roof)
+     0.5f, 1.2f, -0.6f,   1.0f, 1.0f, // Top (roof)
+    -0.3f, 1.2f, -0.6f,   0.0f, 1.0f, // Top (roof)
+    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
+
+    // Back edge (connect back windshield to roof)
+    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f, // Bottom-left (back windshield)
+     0.8f, 0.6f,  0.7f,   1.0f, 0.0f, // Bottom-right (back windshield)
+     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top (roof)
+     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top (roof)
+    -0.3f, 1.2f,  0.6f,   0.0f, 1.0f, // Top (roof)
+    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f, // Bottom-left (back windshield)
+
 };
 
 int main()
@@ -187,7 +221,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     if (glewInit() != GLEW_OK) {
-        std::cout << "Ocorreu um erro iniciando GLEW!" << std::endl;
+        std::cout << " Ocorreu um erro iniciando GLEW!" << std::endl;
     } else {
         std::cout << "GLEW OK!" << std::endl;
         std::cout << glGetString(GL_VERSION) << std::endl;
@@ -237,7 +271,8 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    data = stbi_load("res/images/car_texture.png", &width, &height, &nrChannels, 0);
+
+    data = stbi_load("res/images/opengl.png", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
