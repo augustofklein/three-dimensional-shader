@@ -349,8 +349,6 @@ bool checkCollision(const glm::vec3& nextPosition) {
         float checkX = nextPosition.x + cos(angle) * checkRadius;
         float checkZ = nextPosition.z + sin(angle) * checkRadius;
 
-        printf("%d %d\n", checkX, checkZ);
-
         Color pixelColor = getPixelColor(checkX, checkZ);
         if (pixelColor.isObstacle()) {
             return true;
