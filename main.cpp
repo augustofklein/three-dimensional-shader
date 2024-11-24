@@ -8,12 +8,6 @@
 #include <iostream>
 #include <vector>
 
-/*
-    TODOS: ROTACIONAR O CARRO EM TODAS AS DIRECOES;
-           APLICAR SHADER NAS FACES DO CARRO;
-           VERIFICAR O PIXEL QUE O CARRO ESTA PASSANDO;
-*/
-
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
@@ -29,29 +23,22 @@ glm::vec3 cameraPos = glm::vec3(12.28f, 34.37f, 0.0f);
 glm::vec3 cameraFront = glm::vec3(-0.53f, -0.66f, 0.52f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
 
-// Posi��o para desenhar o carro
-//glm::vec3 cameraPos = glm::vec3(13.80f, 3.80f, 60.67f);
-//glm::vec3 cameraFront = glm::vec3(0.08f, -0.36f, 0.92f);
-//glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 1.0f);
-
 float sensitivity = 0.1f;
 float yaw = -90.0f;
 float pitch = 0.0f;
 unsigned char pixelColor[3];
 
-int numberVertices = 80;
+int numberVertices = 222;
 
 std::vector<float> originalVertices;
 
-// Estrutura para manter o estado do carro
 struct CarState {
-    glm::vec3 position;     // Posi��o atual do carro
-    float angle;            // �ngulo de rota��o em graus
+    glm::vec3 position;     // Posição atual do carro
+    float angle;            // Ângulo de rotação em graus
     float speed;            // Velocidade atual
-    float acceleration;     // Acelera��o
-    float maxSpeed;         // Velocidade m�xima
-    float turnSpeed;        // Velocidade de rota��o
-    float friction;         // Fator de fric��o
+    float acceleration;     // Aceleração
+    float maxSpeed;         // Velocidade máxima
+    float turnSpeed;        // Velocidade de rotação
 
     CarState() {
         position = glm::vec3(0.0f);
@@ -60,11 +47,9 @@ struct CarState {
         acceleration = 0.05f;
         maxSpeed = 0.01f;
         turnSpeed = 0.08f;
-        friction = 0.98f;
     }
 };
 
-// Estrutura para representar uma cor RGB
 struct Color {
     unsigned char r, g, b;
 
@@ -83,7 +68,7 @@ struct Color {
 
 CarState carState;
 
-// Dados de v�rtices para o ch�o
+// Dados de vértices para o chão
 float vertices[] = {
     -50.0f,  -0.6f, -50.0f,  0.0f, 1.0f,
      50.0f,  -0.6f, -50.0f,  1.0f, 1.0f,
@@ -96,111 +81,306 @@ float vertices[] = {
 float carVertices[] = {
     // Main body (lower part)
     // Front face
-    -2.0f, 0.0f, -0.8f,   0.0f, 0.0f,
-     2.0f, 0.0f, -0.8f,   1.0f, 0.0f,
-     2.0f, 0.6f, -0.8f,   1.0f, 1.0f,
-     2.0f, 0.6f, -0.8f,   1.0f, 1.0f,
-    -2.0f, 0.6f, -0.8f,   0.0f, 1.0f,
-    -2.0f, 0.0f, -0.8f,   0.0f, 0.0f,
+    -2.0f,  0.0f, -0.8f,  0.0f, 0.0f,
+     2.0f,  0.0f, -0.8f,  1.0f, 0.0f,
+     2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
+     2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
+    -2.0f,  0.6f, -0.8f,  0.0f, 1.0f,
+    -2.0f,  0.0f, -0.8f,  0.0f, 0.0f,
 
     // Back face
-    -2.0f, 0.0f,  0.8f,   0.0f, 0.0f,
-     2.0f, 0.0f,  0.8f,   1.0f, 0.0f,
-     2.0f, 0.6f,  0.8f,   1.0f, 1.0f,
-     2.0f, 0.6f,  0.8f,   1.0f, 1.0f,
-    -2.0f, 0.6f,  0.8f,   0.0f, 1.0f,
-    -2.0f, 0.0f,  0.8f,   0.0f, 0.0f,
+    -2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
+     2.0f,  0.0f,  0.8f,  1.0f, 0.0f,
+     2.0f,  0.6f,  0.8f,  1.0f, 1.0f,
+     2.0f,  0.6f,  0.8f,  1.0f, 1.0f,
+    -2.0f,  0.6f,  0.8f,  0.0f, 1.0f,
+    -2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
 
     // Left side
-    -2.0f, 0.0f,  0.8f,   0.0f, 0.0f,
-    -2.0f, 0.0f, -0.8f,   1.0f, 0.0f,
-    -2.0f, 0.6f, -0.8f,   1.0f, 1.0f,
-    -2.0f, 0.6f, -0.8f,   1.0f, 1.0f,
-    -2.0f, 0.6f,  0.8f,   0.0f, 1.0f,
-    -2.0f, 0.0f,  0.8f,   0.0f, 0.0f,
+    -2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
+    -2.0f,  0.0f, -0.8f,  1.0f, 0.0f,
+    -2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
+    -2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
+    -2.0f,  0.6f,  0.8f,  0.0f, 1.0f,
+    -2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
 
     // Right side
-     2.0f, 0.0f,  0.8f,   0.0f, 0.0f,
-     2.0f, 0.0f, -0.8f,   1.0f, 0.0f,
-     2.0f, 0.6f, -0.8f,   1.0f, 1.0f,
-     2.0f, 0.6f, -0.8f,   1.0f, 1.0f,
-     2.0f, 0.6f,  0.8f,   0.0f, 1.0f,
-     2.0f, 0.0f,  0.8f,   0.0f, 0.0f,
+     2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
+     2.0f,  0.0f, -0.8f,  1.0f, 0.0f,
+     2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
+     2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
+     2.0f,  0.6f,  0.8f,  0.0f, 1.0f,
+     2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
 
     // Top
-    -2.0f, 0.6f, -0.8f,   0.0f, 0.0f,
-     2.0f, 0.6f, -0.8f,   1.0f, 0.0f,
-     2.0f, 0.6f,  0.8f,   1.0f, 1.0f,
-     2.0f, 0.6f,  0.8f,   1.0f, 1.0f,
-    -2.0f, 0.6f,  0.8f,   0.0f, 1.0f,
-    -2.0f, 0.6f, -0.8f,   0.0f, 0.0f,
+    -2.0f,  0.6f, -0.8f,  0.0f, 0.0f,
+     2.0f,  0.6f, -0.8f,  1.0f, 0.0f,
+     2.0f,  0.6f,  0.8f,  1.0f, 1.0f,
+     2.0f,  0.6f,  0.8f,  1.0f, 1.0f,
+    -2.0f,  0.6f,  0.8f,  0.0f, 1.0f,
+    -2.0f,  0.6f, -0.8f,  0.0f, 0.0f,
 
     // Bottom
-    -2.0f, 0.0f, -0.8f,   0.0f, 0.0f,
-     2.0f, 0.0f, -0.8f,   1.0f, 0.0f,
-     2.0f, 0.0f,  0.8f,   1.0f, 1.0f,
-     2.0f, 0.0f,  0.8f,   1.0f, 1.0f,
-    -2.0f, 0.0f,  0.8f,   0.0f, 1.0f,
-    -2.0f, 0.0f, -0.8f,   0.0f, 0.0f,
+    -2.0f,  0.0f, -0.8f,  0.0f, 0.0f,
+     2.0f,  0.0f, -0.8f,  1.0f, 0.0f,
+     2.0f,  0.0f,  0.8f,  1.0f, 1.0f,
+     2.0f,  0.0f,  0.8f,  1.0f, 1.0f,
+    -2.0f,  0.0f,  0.8f,  0.0f, 1.0f,
+    -2.0f,  0.0f, -0.8f,  0.0f, 0.0f,
 
     // Cabin (upper part)
     // Front windshield
-    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f,
-     0.8f, 0.6f, -0.7f,   1.0f, 0.0f,
-     0.5f, 1.2f, -0.6f,   1.0f, 1.0f,
-     0.5f, 1.2f, -0.6f,   1.0f, 1.0f,
-    -0.3f, 1.2f, -0.6f,   0.0f, 1.0f,
-    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f,
+    -0.5f,  0.6f, -0.7f,  0.0f, 0.0f,
+     0.8f,  0.6f, -0.7f,  1.0f, 0.0f,
+     0.5f,  1.2f, -0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f, -0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f, -0.6f,  0.0f, 1.0f,
+    -0.5f,  0.6f, -0.7f,  0.0f, 0.0f,
 
     // Back windshield
-    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f,
-     0.8f, 0.6f,  0.7f,   1.0f, 0.0f,
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f,
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f,
-    -0.3f, 1.2f,  0.6f,   0.0f, 1.0f,
-    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f,
+    -0.5f,  0.6f,  0.7f,  0.0f, 0.0f,
+     0.8f,  0.6f,  0.7f,  1.0f, 0.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f,  0.6f,  0.0f, 1.0f,
+    -0.5f,  0.6f,  0.7f,  0.0f, 0.0f,
 
     // Roof
-    -0.3f, 1.2f, -0.6f,   0.0f, 0.0f,
-     0.5f, 1.2f, -0.6f,   1.0f, 0.0f,
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f,
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f,
-    -0.3f, 1.2f,  0.6f,   0.0f, 1.0f,
-    -0.3f, 1.2f, -0.6f,   0.0f, 0.0f,
+    -0.3f,  1.2f, -0.6f,  0.0f, 0.0f,
+     0.5f,  1.2f, -0.6f,  1.0f, 0.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f,  0.6f,  0.0f, 1.0f,
+    -0.3f,  1.2f, -0.6f,  0.0f, 0.0f,
 
     // Upper part closure
     // Left side (connect front and back windshields to the roof)
-    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
-    -0.5f, 0.6f,  0.7f,   1.0f, 0.0f, // Bottom-left (back windshield)
-    -0.3f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-left (roof)
-    -0.3f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-left (roof)
-    -0.3f, 1.2f, -0.6f,   0.0f, 1.0f, // Top-left (roof)
-    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
+    -0.5f,  0.6f, -0.7f,  0.0f, 0.0f,
+    -0.5f,  0.6f,  0.7f,  1.0f, 0.0f,
+    -0.3f,  1.2f,  0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f,  0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f, -0.6f,  0.0f, 1.0f,
+    -0.5f,  0.6f, -0.7f,  0.0f, 0.0f,
 
     // Right side (connect front and back windshields to the roof)
-     0.8f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-right (front windshield)
-     0.8f, 0.6f,  0.7f,   1.0f, 0.0f, // Bottom-right (back windshield)
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-right (roof)
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top-right (roof)
-     0.5f, 1.2f, -0.6f,   0.0f, 1.0f, // Top-right (roof)
-     0.8f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-right (front windshield)
+     0.8f,  0.6f, -0.7f,  0.0f, 0.0f,
+     0.8f,  0.6f,  0.7f,  1.0f, 0.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f, -0.6f,  0.0f, 1.0f,
+     0.8f,  0.6f, -0.7f,  0.0f, 0.0f,
 
      // Front edge (connect front windshield to roof)
-    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
-     0.8f, 0.6f, -0.7f,   1.0f, 0.0f, // Bottom-right (front windshield)
-     0.5f, 1.2f, -0.6f,   1.0f, 1.0f, // Top (roof)
-     0.5f, 1.2f, -0.6f,   1.0f, 1.0f, // Top (roof)
-    -0.3f, 1.2f, -0.6f,   0.0f, 1.0f, // Top (roof)
-    -0.5f, 0.6f, -0.7f,   0.0f, 0.0f, // Bottom-left (front windshield)
+    -0.5f,  0.6f, -0.7f,  0.0f, 0.0f,
+     0.8f,  0.6f, -0.7f,  1.0f, 0.0f,
+     0.5f,  1.2f, -0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f, -0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f, -0.6f,  0.0f, 1.0f,
+    -0.5f,  0.6f, -0.7f,  0.0f, 0.0f,
 
     // Back edge (connect back windshield to roof)
-    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f, // Bottom-left (back windshield)
-     0.8f, 0.6f,  0.7f,   1.0f, 0.0f, // Bottom-right (back windshield)
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top (roof)
-     0.5f, 1.2f,  0.6f,   1.0f, 1.0f, // Top (roof)
-    -0.3f, 1.2f,  0.6f,   0.0f, 1.0f, // Top (roof)
-    -0.5f, 0.6f,  0.7f,   0.0f, 0.0f, // Bottom-left (back�windshield)
+    -0.5f,  0.6f,  0.7f,  0.0f, 0.0f,
+     0.8f,  0.6f,  0.7f,  1.0f, 0.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+     0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
+    -0.3f,  1.2f,  0.6f,  0.0f, 1.0f,
+    -0.5f,  0.6f,  0.7f,  0.0f, 0.0f,
 
+    // Front-left wheel
+    // Front face
+    -1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+    -1.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f, -0.4f, -1.0f,  1.0f, 1.0f,
+    -1.0f, -0.4f, -1.0f,  1.0f, 1.0f,
+    -1.5f, -0.4f, -1.0f,  0.0f, 1.0f,
+    -1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Back face
+    -1.5f,  0.0f, -0.5f,  0.0f, 0.0f,
+    -1.0f,  0.0f, -0.5f,  1.0f, 0.0f,
+    -1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.5f, -0.4f, -0.5f,  0.0f, 1.0f,
+    -1.5f,  0.0f, -0.5f,  0.0f, 0.0f,
+
+    // Left face
+    -1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+    -1.5f,  0.0f, -0.5f,  1.0f, 0.0f,
+    -1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.5f, -0.4f, -1.0f,  0.0f, 1.0f,
+    -1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Right face
+    -1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+    -1.0f,  0.0f, -0.5f,  1.0f, 0.0f,
+    -1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.0f, -0.4f, -1.0f,  0.0f, 1.0f,
+    -1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Bottom face
+    -1.5f, -0.4f, -1.0f,  0.0f, 0.0f,
+    -1.0f, -0.4f, -1.0f,  1.0f, 0.0f,
+    -1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+    -1.5f, -0.4f, -0.5f,  0.0f, 1.0f,
+    -1.5f, -0.4f, -1.0f,  0.0f, 0.0f,
+
+    // Top face
+    -1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+    -1.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+    -1.0f,  0.0f, -0.5f,  1.0f, 1.0f,
+    -1.0f,  0.0f, -0.5f,  1.0f, 1.0f,
+    -1.5f,  0.0f, -0.5f,  0.0f, 1.0f,
+    -1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Front-right wheel
+    // Front face
+     1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+     1.5f,  0.0f, -1.0f,  1.0f, 0.0f,
+     1.5f, -0.4f, -1.0f,  1.0f, 1.0f,
+     1.5f, -0.4f, -1.0f,  1.0f, 1.0f,
+     1.0f, -0.4f, -1.0f,  0.0f, 1.0f,
+     1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Back face
+     1.0f,  0.0f, -0.5f,  0.0f, 0.0f,
+     1.5f,  0.0f, -0.5f,  1.0f, 0.0f,
+     1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.0f, -0.4f, -0.5f,  0.0f, 1.0f,
+     1.0f,  0.0f, -0.5f,  0.0f, 0.0f,
+
+    // Left face
+     1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+     1.0f,  0.0f, -0.5f,  1.0f, 0.0f,
+     1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.0f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.0f, -0.4f, -1.0f,  0.0f, 1.0f,
+     1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Right face
+     1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+     1.5f,  0.0f, -0.5f,  1.0f, 0.0f,
+     1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.5f, -0.4f, -1.0f,  0.0f, 1.0f,
+     1.5f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Bottom face
+     1.0f, -0.4f, -1.0f,  0.0f, 0.0f,
+     1.5f, -0.4f, -1.0f,  1.0f, 0.0f,
+     1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.5f, -0.4f, -0.5f,  1.0f, 1.0f,
+     1.0f, -0.4f, -0.5f,  0.0f, 1.0f,
+     1.0f, -0.4f, -1.0f,  0.0f, 0.0f,
+
+    // Top face
+     1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+     1.5f,  0.0f, -1.0f,  1.0f, 0.0f,
+     1.5f,  0.0f, -0.5f,  1.0f, 1.0f,
+     1.5f,  0.0f, -0.5f,  1.0f, 1.0f,
+     1.0f,  0.0f, -0.5f,  0.0f, 1.0f,
+     1.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+
+    // Back-left wheel
+    // Front face
+    -1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+    -1.0f,  0.0f,  0.5f,  1.0f, 0.0f,
+    -1.0f, -0.4f,  0.5f,  1.0f, 1.0f,
+    -1.0f, -0.4f,  0.5f,  1.0f, 1.0f,
+    -1.5f, -0.4f,  0.5f,  0.0f, 1.0f,
+    -1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Back face
+    -1.5f,  0.0f,  1.0f,  0.0f, 0.0f,
+    -1.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+    -1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.5f, -0.4f,  1.0f,  0.0f, 1.0f,
+    -1.5f,  0.0f,  1.0f,  0.0f, 0.0f,
+
+    // Left face
+    -1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+    -1.5f,  0.0f,  1.0f,  1.0f, 0.0f,
+    -1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.5f, -0.4f,  0.5f,  0.0f, 1.0f,
+    -1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Right face
+    -1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+    -1.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+    -1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.0f, -0.4f,  0.5f,  0.0f, 1.0f,
+    -1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Bottom face
+    -1.5f, -0.4f,  0.5f,  0.0f, 0.0f,
+    -1.0f, -0.4f,  0.5f,  1.0f, 0.0f,
+    -1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+    -1.5f, -0.4f,  1.0f,  0.0f, 1.0f,
+    -1.5f, -0.4f,  0.5f,  0.0f, 0.0f,
+
+    // Top face
+    -1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+    -1.0f,  0.0f,  0.5f,  1.0f, 0.0f,
+    -1.0f,  0.0f,  1.0f,  1.0f, 1.0f,
+    -1.0f,  0.0f,  1.0f,  1.0f, 1.0f,
+    -1.5f,  0.0f,  1.0f,  0.0f, 1.0f,
+    -1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Back-right wheel
+    // Front face
+     1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+     1.5f,  0.0f,  0.5f,  1.0f, 0.0f,
+     1.5f, -0.4f,  0.5f,  1.0f, 1.0f,
+     1.5f, -0.4f,  0.5f,  1.0f, 1.0f,
+     1.0f, -0.4f,  0.5f,  0.0f, 1.0f,
+     1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Back face
+     1.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+     1.5f,  0.0f,  1.0f,  1.0f, 0.0f,
+     1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.0f, -0.4f,  1.0f,  0.0f, 1.0f,
+     1.0f,  0.0f,  1.0f,  0.0f, 0.0f,
+
+    // Left face
+     1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+     1.0f,  0.0f,  1.0f,  1.0f, 0.0f,
+     1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.0f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.0f, -0.4f,  0.5f,  0.0f, 1.0f,
+     1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Right face
+     1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+     1.5f,  0.0f,  1.0f,  1.0f, 0.0f,
+     1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.5f, -0.4f,  0.5f,  0.0f, 1.0f,
+     1.5f,  0.0f,  0.5f,  0.0f, 0.0f,
+
+    // Bottom face
+     1.0f, -0.4f,  0.5f,  0.0f, 0.0f,
+     1.5f, -0.4f,  0.5f,  1.0f, 0.0f,
+     1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.5f, -0.4f,  1.0f,  1.0f, 1.0f,
+     1.0f, -0.4f,  1.0f,  0.0f, 1.0f,
+     1.0f, -0.4f,  0.5f,  0.0f, 0.0f,
+
+    // Top face
+     1.0f,  0.0f,  0.5f,  0.0f, 0.0f,
+     1.5f,  0.0f,  0.5f,  1.0f, 0.0f,
+     1.5f,  0.0f,  1.0f,  1.0f, 1.0f,
+     1.5f,  0.0f,  1.0f,  1.0f, 1.0f,
+     1.0f,  0.0f,  1.0f,  0.0f, 1.0f,
+     1.0f,  0.0f,  0.5f,  0.0f, 0.0f
 };
 
 int main()
@@ -256,7 +436,7 @@ int main()
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true);
 
-    data = stbi_load("res/images/pista_nova.jpeg", &width, &height, &nrChannels, 0);
+    data = stbi_load("res/images/race_track.jpeg", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -272,7 +452,7 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    data = stbi_load("res/images/opengl.png", &width, &height, &nrChannels, 0);
+    data = stbi_load("res/images/car_texture.png", &width, &height, &nrChannels, 0);
     if (data) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -289,7 +469,7 @@ int main()
 
     while (!glfwWindowShouldClose(window)) {
 
-        // Configura��o do carro
+        // Configuração do carro
         glBindVertexArray(VAOs[1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(carVertices), carVertices, GL_STATIC_DRAW);
@@ -356,7 +536,7 @@ void flipCamera(float x, float y)
     cameraFront = glm::normalize(direction);
 }
 
-// Fun��o para ler a cor do pixel em uma posi��o espec�fica
+// Função para ler a cor do pixel em uma posição específica
 Color getPixelColor(float x, float z) {
     // Converte as coordenadas do mundo para coordenadas de tela
     glm::vec4 worldPos = glm::vec4(x, 0.0f, z, 1.0f);
@@ -369,7 +549,7 @@ Color getPixelColor(float x, float z) {
     int screenX = (clipSpace.x + 1.0f) * SCR_WIDTH / 2.0f;
     int screenY = (clipSpace.y + 1.0f) * SCR_HEIGHT / 2.0f;
 
-    // L� a cor do pixel
+    // Lê a cor do pixel
     Color pixel;
     glReadPixels(screenX, screenY, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &pixel);
 
@@ -384,23 +564,21 @@ bool checkCollision(const glm::vec3& nextPosition) {
         float checkX = nextPosition.x + cos(angle) * checkRadius;
         float checkZ = nextPosition.z + sin(angle) * checkRadius;
 
-        Color pixelColor = getPixelColor(checkX, checkZ);
-        if (pixelColor.isObstacle()) {
-            return true;
-        }
+        //Color pixelColor = getPixelColor(checkX, checkZ);
+        //if (pixelColor.isObstacle()) {
+        //    return true;
+        //}
     }
 
     return false;
 }
 
-// Fun��o de inicializa��o para configurar os v�rtices originais
 void initializeCarVertices() {
     originalVertices.assign(carVertices, carVertices + sizeof(carVertices)/sizeof(float));
 }
 
-// Fun��o updateCarVertices atualizada
 void updateCarVertices() {
-    // Verifica se os v�rtices originais foram inicializados
+    // Verifica se os vértices originais foram inicializados
     if (originalVertices.empty()) {
         initializeCarVertices();
     }
@@ -417,14 +595,14 @@ void updateCarVertices() {
             1.0f
         );
 
-        // Aplica a transforma��o
+        // Aplica a transformação
         glm::vec4 transformed = transform * vertex;
 
-        // Atualiza os v�rtices
+        // Atualiza os vértices
         carVertices[i * 5] = transformed.x;
         carVertices[i * 5 + 1] = transformed.y;
         carVertices[i * 5 + 2] = transformed.z;
-        // Mant�m as coordenadas de textura inalteradas
+        // Mantém as coordenadas de textura inalteradas
         carVertices[i * 5 + 3] = originalVertices[i * 5 + 3];
         carVertices[i * 5 + 4] = originalVertices[i * 5 + 4];
     }
@@ -434,19 +612,19 @@ void moveCarForward() {
     float deltaSpeed = carState.acceleration;
     float newSpeed = std::max(carState.speed - deltaSpeed, -carState.maxSpeed);
 
-    // Calcula a pr�xima posi��o
+    // Calcula a próxima posição
     float angleRad = glm::radians(carState.angle);
     glm::vec3 nextPosition = carState.position;
     nextPosition.x += newSpeed * cos(angleRad);
     nextPosition.z -= newSpeed * sin(angleRad);
 
-    // Verifica colis�o antes de mover
+    // Verifica colisão antes de mover
     if (!checkCollision(nextPosition)) {
         carState.speed = newSpeed;
         carState.position = nextPosition;
         updateCarVertices();
     } else {
-        // Em caso de colis�o, para o carro
+        // Em caso de colisão, para o carro
         carState.speed = 0.0f;
     }
 }
@@ -455,19 +633,19 @@ void moveCarBackward() {
     float deltaSpeed = carState.acceleration;
     float newSpeed = std::min(carState.speed + deltaSpeed, carState.maxSpeed);
 
-    // Calcula a pr�xima posi��o
+    // Calcula a próxima posição
     float angleRad = glm::radians(carState.angle);
     glm::vec3 nextPosition = carState.position;
     nextPosition.x += newSpeed * cos(angleRad);
     nextPosition.z -= newSpeed * sin(angleRad);
 
-    // Verifica colis�o antes de mover
+    // Verifica colisão antes de mover
     if (!checkCollision(nextPosition)) {
         carState.speed = newSpeed;
         carState.position = nextPosition;
         updateCarVertices();
     } else {
-        // Em caso de colis�o, para o carro
+        // Em caso de colisão, para o carro
         carState.speed = 0.0f;
     }
 }
@@ -480,29 +658,6 @@ void moveCarRight() {
 void moveCarLeft() {
     carState.angle += carState.turnSpeed * (carState.speed != 0 ? 1.0f : 0.0f);
     updateCarVertices();
-}
-
-// Fun��o para aplicar fric��o e atualizar o estado do carro
-void updateCarPhysics() {
-    if (carState.speed != 0.0f) {
-        carState.speed *= carState.friction;
-
-        if (std::abs(carState.speed) < 0.001f) {
-            carState.speed = 0.0f;
-        } else {
-            float angleRad = glm::radians(carState.angle);
-            glm::vec3 nextPosition = carState.position;
-            nextPosition.x += carState.speed * cos(angleRad);
-            nextPosition.z -= carState.speed * sin(angleRad);
-
-            if (!checkCollision(nextPosition)) {
-                carState.position = nextPosition;
-                updateCarVertices();
-            } else {
-                carState.speed = 0.0f;
-            }
-        }
-    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
