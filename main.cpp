@@ -184,7 +184,11 @@ float carVertices[] = {
      0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
      0.5f,  1.2f,  0.6f,  1.0f, 1.0f,
     -0.3f,  1.2f,  0.6f,  0.0f, 1.0f,
-    -0.5f,  0.6f,  0.7f,  0.0f, 0.0f,
+    -0.5f,  0.6f,  0.7f,  0.0f, 0.0f
+
+};
+
+float wheelVertices[] = {
 
     // Front-left wheel
     // Front face
@@ -381,6 +385,7 @@ float carVertices[] = {
      1.5f,  0.0f,  1.0f,  1.0f, 1.0f,
      1.0f,  0.0f,  1.0f,  0.0f, 1.0f,
      1.0f,  0.0f,  0.5f,  0.0f, 0.0f
+
 };
 
 int main()
@@ -411,10 +416,11 @@ int main()
 
     Shader ourShader("vertex.glsl", "fragment.glsl");
     Shader carShader("vertex.glsl", "car_shader.glsl");
+    Shader wheelShader("vertex.glsl", "wheel_shader.glsl");
 
-    GLuint VBOs[2], VAOs[2];
-    glGenVertexArrays(2, VAOs);
-    glGenBuffers(2, VBOs);
+    GLuint VBOs[3], VAOs[3];
+    glGenVertexArrays(3, VAOs);
+    glGenBuffers(3, VBOs);
 
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
@@ -424,9 +430,10 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    unsigned int texture1, texture2;
+    unsigned int texture1, texture2, texture3;
     unsigned char *data;
 
+    //Configuraões dos shaders
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -441,7 +448,7 @@ int main()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }else{
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture of race track" << std::endl;
     }
     stbi_image_free(data);
 
@@ -457,7 +464,23 @@ int main()
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }else{
-        std::cout << "Failed to load texture" << std::endl;
+        std::cout << "Failed to load texture of car" << std::endl;
+    }
+    stbi_image_free(data);
+
+    glGenTextures(1, &texture3);
+    glBindTexture(GL_TEXTURE_2D, texture3);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    data = stbi_load("res/images/wheel.png", &width, &height, &nrChannels, 0);
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }else{
+        std::cout << "Failed to load texture of wheel" << std::endl;
     }
     stbi_image_free(data);
 
@@ -467,12 +490,24 @@ int main()
     carShader.use();
     carShader.setInt("texture2", 0);
 
+    wheelShader.use();
+    wheelShader.setInt("texture3", 0);
+
     while (!glfwWindowShouldClose(window)) {
 
         // Configuração do carro
         glBindVertexArray(VAOs[1]);
         glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(carVertices), carVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        // Configuração das rodas
+        glBindVertexArray(VAOs[2]);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(wheelVertices), wheelVertices, GL_STATIC_DRAW);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -508,12 +543,23 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, sizeof(carVertices) / (5 * sizeof(float)));
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture3);
+        model = glm::translate(model, glm::vec3(8.0f, 0.0f, 35.0f));
+
+        wheelShader.use();
+        glBindVertexArray(VAOs[2]);
+        wheelShader.setMat4("projection", projection);
+        glUniformMatrix4fv(glGetUniformLocation(wheelShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(wheelShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(wheelShader) / (5 * sizeof(float)));
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(2, VAOs);
-    glDeleteBuffers(2, VBOs);
+    glDeleteVertexArrays(3, VAOs);
+    glDeleteBuffers(3, VBOs);
     glfwTerminate();
     return 0;
 }
@@ -575,6 +621,7 @@ bool checkCollision(const glm::vec3& nextPosition) {
 
 void initializeCarVertices() {
     originalVertices.assign(carVertices, carVertices + sizeof(carVertices)/sizeof(float));
+    originalVertices.assign(wheelVertices, wheelVertices + sizeof(wheelVertices)/sizeof(float));
 }
 
 void updateCarVertices() {
