@@ -69,24 +69,25 @@ struct Color {
 CarState carState;
 
 // Dados de vértices para o chão
+// Três primeiros são coordenadas, três seguintes são normalizados e dois últimos para textura
 float vertices[] = {
-    -50.0f,  -0.6f, -50.0f,  0.0f, 1.0f,
-     50.0f,  -0.6f, -50.0f,  1.0f, 1.0f,
-     50.0f,  -0.6f,  50.0f,  1.0f, 0.0f,
-     50.0f,  -0.6f,  50.0f,  1.0f, 0.0f,
-    -50.0f,  -0.6f,  50.0f,  0.0f, 0.0f,
-    -50.0f,  -0.6f, -50.0f,  0.0f, 1.0f
+    -50.0f,  -0.6f, -50.0f,  0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+     50.0f,  -0.6f, -50.0f,  0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
+     50.0f,  -0.6f,  50.0f,  0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+     50.0f,  -0.6f,  50.0f,  0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    -50.0f,  -0.6f,  50.0f,  0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+    -50.0f,  -0.6f, -50.0f,  0.0f, -1.0f, 0.0f, 0.0f, 1.0f
 };
 
 float carVertices[] = {
     // Main body (lower part)
     // Front face
-    -2.0f,  0.0f, -0.8f,  0.0f, 0.0f,
-     2.0f,  0.0f, -0.8f,  1.0f, 0.0f,
-     2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
-     2.0f,  0.6f, -0.8f,  1.0f, 1.0f,
-    -2.0f,  0.6f, -0.8f,  0.0f, 1.0f,
-    -2.0f,  0.0f, -0.8f,  0.0f, 0.0f,
+    -2.0f,  0.0f, -0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+     2.0f,  0.0f, -0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+     2.0f,  0.6f, -0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+     2.0f,  0.6f, -0.8f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    -2.0f,  0.6f, -0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+    -2.0f,  0.0f, -0.8f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
 
     // Back face
     -2.0f,  0.0f,  0.8f,  0.0f, 0.0f,
