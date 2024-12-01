@@ -384,6 +384,66 @@ float carVertices[] = {
      1.0f,  0.0f,  0.5f,  0.0f, 0.0f, 0.0f, 0.0f, 1.0f
 };
 
+float lampPostVertices[] = {
+    // Base of the Lamp Post (cylinder-like structure)
+    // Bottom face
+    -0.2f, 0.0f, -0.2f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+     0.2f, 0.0f, -0.2f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+     0.2f, 0.0f,  0.2f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+     0.2f, 0.0f,  0.2f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+    -0.2f, 0.0f,  0.2f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+    -0.2f, 0.0f, -0.2f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+
+    // Top face of the base
+    -0.2f, 0.48f, -0.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+     0.2f, 0.48f, -0.2f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+     0.2f, 0.48f,  0.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+     0.2f, 0.48f,  0.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    -0.2f, 0.48f,  0.2f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    -0.2f, 0.48f, -0.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+
+    // Pole (now much taller)
+    -0.1f, 0.48f, -0.1f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+     0.1f, 0.48f, -0.1f,  1.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+     0.1f, 7.2f, -0.1f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
+     0.1f, 7.2f, -0.1f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
+    -0.1f, 7.2f, -0.1f,  0.0f, 1.0f,  0.0f, 0.0f, -1.0f,
+    -0.1f, 0.48f, -0.1f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+
+    // Lamp Head (larger cube for proportionality)
+    -0.4f, 7.2f, -0.4f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+     0.4f, 7.2f, -0.4f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+     0.4f, 7.8f, -0.4f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+     0.4f, 7.8f, -0.4f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    -0.4f, 7.8f, -0.4f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    -0.4f, 7.2f, -0.4f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+
+    // Sides of the bottom base cube (closing the sides)
+    // Front face
+    -0.2f, 0.0f, -0.2f,  0.0f, 0.0f, -1.0f,  0.0f, -1.0f,
+    -0.2f, 0.48f, -0.2f,  0.0f, 0.0f, -1.0f,  0.0f,  1.0f,
+     0.2f, 0.48f, -0.2f,  1.0f, 0.0f, -1.0f,  0.0f,  1.0f,
+     0.2f, 0.0f, -0.2f,  1.0f, 0.0f, -1.0f,  0.0f, -1.0f,
+
+    // Back face
+    -0.2f, 0.0f, 0.2f,  0.0f, 0.0f,  1.0f,  0.0f, -1.0f,
+    -0.2f, 0.48f, 0.2f,  0.0f, 0.0f,  1.0f,  0.0f,  1.0f,
+     0.2f, 0.48f, 0.2f,  1.0f, 0.0f,  1.0f,  0.0f,  1.0f,
+     0.2f, 0.0f, 0.2f,  1.0f, 0.0f,  1.0f,  0.0f, -1.0f,
+
+    // Left face
+    -0.2f, 0.0f, -0.2f,  -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    -0.2f, 0.0f, 0.2f,  -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    -0.2f, 0.48f, 0.2f,  -1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+    -0.2f, 0.48f, -0.2f,  -1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+
+    // Right face
+     0.2f, 0.0f, -0.2f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+     0.2f, 0.0f, 0.2f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+     0.2f, 0.48f, 0.2f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
+     0.2f, 0.48f, -0.2f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f
+};
+
 int main()
 {
     glfwInit();
@@ -412,14 +472,25 @@ int main()
 
     Shader ourShader("vertex.glsl", "fragment.glsl");
     Shader carShader("vertex.glsl", "car_shader.glsl");
+    Shader lampPostShader("vertex.glsl", "car_shader.glsl");
 
-    GLuint VBOs[2], VAOs[2];
-    glGenVertexArrays(2, VAOs);
-    glGenBuffers(2, VBOs);
+    GLuint VBOs[3], VAOs[3];
+    glGenVertexArrays(3, VAOs);
+    glGenBuffers(3, VBOs);
 
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(VAOs[2]);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(lampPostVertices), lampPostVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -470,6 +541,9 @@ int main()
     carShader.use();
     carShader.setInt("texture2", 0);
 
+    lampPostShader.use();
+    lampPostShader.setInt("texture2", 0);
+
     while (!glfwWindowShouldClose(window)) {
 
         // Configuração do carro
@@ -512,6 +586,13 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, sizeof(carVertices) / (8 * sizeof(float)));
+
+        lampPostShader.use();
+        glBindVertexArray(VAOs[2]);
+        lampPostShader.setMat4("projection", projection);
+        glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(lampPostVertices) / (8 * sizeof(float)));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
