@@ -15,6 +15,10 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1200;
 
+glm::vec3 lightPos(1.2f, 7.2f, 3.2f);
+
+float specularStrength = 0.5;
+
 glm::mat4 view;
 glm::mat4 projection;
 
@@ -385,63 +389,53 @@ float carVertices[] = {
 };
 
 float lampPostVertices[] = {
-    // Base of the Lamp Post (cylinder-like structure)
-    // Bottom face
-    -0.2f, 0.0f, -0.2f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-     0.2f, 0.0f, -0.2f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
-     0.2f, 0.0f,  0.2f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-     0.2f, 0.0f,  0.2f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-    -0.2f, 0.0f,  0.2f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
-    -0.2f, 0.0f, -0.2f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+    1.4f, 0.0f, 3.2f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+    0.6f, 0.0f, 3.2f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+    0.6f, 0.0f, 2.8f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+    0.6f, 0.0f, 2.8f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+    1.4f, 0.0f, 2.8f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+    1.4f, 0.0f, 3.2f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
 
-    // Top face of the base
-    -0.2f, 0.48f, -0.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.2f, 0.48f, -0.2f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.2f, 0.48f,  0.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-     0.2f, 0.48f,  0.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    -0.2f, 0.48f,  0.2f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    -0.2f, 0.48f, -0.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    1.4f, 0.48f, 3.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    0.6f, 0.48f, 3.2f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    0.6f, 0.48f, 2.8f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    0.6f, 0.48f, 2.8f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    1.4f, 0.48f, 2.8f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    1.4f, 0.48f, 3.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
 
-    // Pole (now much taller)
-    -0.1f, 0.48f, -0.1f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
-     0.1f, 0.48f, -0.1f,  1.0f, 0.0f,  0.0f, 0.0f, -1.0f,
-     0.1f, 7.2f, -0.1f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
-     0.1f, 7.2f, -0.1f,  1.0f, 1.0f,  0.0f, 0.0f, -1.0f,
-    -0.1f, 7.2f, -0.1f,  0.0f, 1.0f,  0.0f, 0.0f, -1.0f,
-    -0.1f, 0.48f, -0.1f,  0.0f, 0.0f,  0.0f, 0.0f, -1.0f,
+    1.2f, 0.48f, 3.1f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+    0.8f, 0.48f, 3.1f,  1.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+    0.8f, 7.2f,  3.1f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+    0.8f, 7.2f,  3.1f,  1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+    1.2f, 7.2f,  3.1f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+    1.2f, 0.48f, 3.1f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
 
-    // Lamp Head (larger cube for proportionality)
-    -0.4f, 7.2f, -0.4f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.4f, 7.2f, -0.4f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-     0.4f, 7.8f, -0.4f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-     0.4f, 7.8f, -0.4f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    -0.4f, 7.8f, -0.4f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    -0.4f, 7.2f, -0.4f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    1.8f, 7.2f, 3.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    0.2f, 7.2f, 3.2f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
+    0.2f, 7.8f, 3.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    0.2f, 7.8f, 3.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    1.8f, 7.8f, 3.2f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
+    1.8f, 7.2f, 3.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
 
-    // Sides of the bottom base cube (closing the sides)
-    // Front face
-    -0.2f, 0.0f, -0.2f,  0.0f, 0.0f, -1.0f,  0.0f, -1.0f,
-    -0.2f, 0.48f, -0.2f,  0.0f, 0.0f, -1.0f,  0.0f,  1.0f,
-     0.2f, 0.48f, -0.2f,  1.0f, 0.0f, -1.0f,  0.0f,  1.0f,
-     0.2f, 0.0f, -0.2f,  1.0f, 0.0f, -1.0f,  0.0f, -1.0f,
+    1.4f, 0.0f, 3.2f, -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    1.4f, 0.48f, 3.2f,  0.0f, 0.0f, -1.0f,  0.0f,  1.0f,
+    0.6f, 0.48f, 3.2f,  1.0f, 0.0f, -1.0f,  0.0f,  1.0f,
+    0.6f, 0.0f, 3.2f,  1.0f, 0.0f, -1.0f,  0.0f, -1.0f,
 
-    // Back face
-    -0.2f, 0.0f, 0.2f,  0.0f, 0.0f,  1.0f,  0.0f, -1.0f,
-    -0.2f, 0.48f, 0.2f,  0.0f, 0.0f,  1.0f,  0.0f,  1.0f,
-     0.2f, 0.48f, 0.2f,  1.0f, 0.0f,  1.0f,  0.0f,  1.0f,
-     0.2f, 0.0f, 0.2f,  1.0f, 0.0f,  1.0f,  0.0f, -1.0f,
+    1.4f, 0.0f, 2.8f,  0.0f, 0.0f,  1.0f,  0.0f, -1.0f,
+    1.4f, 0.48f, 2.8f,  0.0f, 0.0f,  1.0f,  0.0f,  1.0f,
+    0.6f, 0.48f, 2.8f,  1.0f, 0.0f,  1.0f,  0.0f,  1.0f,
+    0.6f, 0.0f, 2.8f,  1.0f, 0.0f,  1.0f,  0.0f, -1.0f,
 
-    // Left face
-    -0.2f, 0.0f, -0.2f,  -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-    -0.2f, 0.0f, 0.2f,  -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
-    -0.2f, 0.48f, 0.2f,  -1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
-    -0.2f, 0.48f, -0.2f,  -1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+    1.4f, 0.0f, 3.2f,  -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    1.4f, 0.0f, 2.8f,  -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
+    1.4f, 0.48f, 2.8f,  -1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
+    1.4f, 0.48f, 3.2f,  -1.0f, 1.0f,  0.0f, -1.0f,  0.0f,
 
-    // Right face
-     0.2f, 0.0f, -0.2f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-     0.2f, 0.0f, 0.2f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
-     0.2f, 0.48f, 0.2f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f,
-     0.2f, 0.48f, -0.2f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f
+    0.6f, 0.0f, 3.2f,  1.0f, 0.0f,  0.0f,  1.0f,  0.0f,
+    0.6f, 0.0f, 2.8f,  1.0f, 0.0f,  0.0f,  1.0f,   0.0f,
+    0.6f, 0.48f, 2.8f,  1.0f, 1.0f,  0.0f,  1.0f,   0.0f,
+    0.6f, 0.48f, 3.2f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f
 };
 
 int main()
@@ -535,6 +529,8 @@ int main()
     }
     stbi_image_free(data);
 
+    Shader lightingShader("phong_lighting.vs", "phong_lighting.fs");
+
     ourShader.use();
     ourShader.setInt("texture1", 0);
 
@@ -593,6 +589,25 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glDrawArrays(GL_TRIANGLES, 0, sizeof(lampPostVertices) / (8 * sizeof(float)));
+
+        // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
+        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
+        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
+
+        // be sure to activate shader when setting uniforms/drawing objects
+        lightingShader.use();
+        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
+        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        lightingShader.setVec3("lightPos", lightPos);
+        lightingShader.setVec3("viewPos", cameraPos);
+        lightingShader.setFloat("specularStrength", specularStrength);
+
+        // view/projection transformations
+        glm::mat4 projection = glm::perspective(glm::radians(6.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        lightingShader.setMat4("projection", projection);
+        lightingShader.setMat4("view", view);
+        lightingShader.setMat4("model", model);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
