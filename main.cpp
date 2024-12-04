@@ -529,7 +529,18 @@ int main()
     }
     stbi_image_free(data);
 
+    unsigned int lightCubeVAO;
+    glGenVertexArrays(1, &lightCubeVAO);
+    glBindVertexArray(lightCubeVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
+    // note that we update the lamp's position attribute's stride to reflect the updated buffer data
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    //Shaders utilizados para a iluminação
     Shader lightingShader("phong_lighting.vs", "phong_lighting.fs");
+    Shader lightCubeShader("light_cube.vs", "light_cube.fs");
 
     ourShader.use();
     ourShader.setInt("texture1", 0);
@@ -608,13 +619,25 @@ int main()
         lightingShader.setMat4("view", view);
         lightingShader.setMat4("model", model);
 
+        // also draw the lamp object
+        lightCubeShader.use();
+        lightCubeShader.setMat4("projection", projection);
+        lightCubeShader.setMat4("view", view);
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, lightPos);
+        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        lightCubeShader.setMat4("model", model);
+
+        glBindVertexArray(lightCubeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(2, VAOs);
-    glDeleteBuffers(2, VBOs);
+    glDeleteVertexArrays(1, &lightCubeVAO);
+    glDeleteVertexArrays(3, VAOs);
+    glDeleteBuffers(3, VBOs);
     glfwTerminate();
     return 0;
 }
