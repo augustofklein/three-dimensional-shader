@@ -438,6 +438,50 @@ float lampPostVertices[] = {
     0.6f, 0.48f, 3.2f,  1.0f, 1.0f,  0.0f,  1.0f,  0.0f
 };
 
+float cubeLamp[] = {
+    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f,   // 1 // (1)
+        -0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.25f,  // 5 // (2)
+         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.25f, 0.25f, // 3 // (3)
+        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f,   // 6 // (1)
+         0.5f,  0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.25f, 0.25f, // 4 // (3)
+         0.5f, -0.5f, -0.5f,  0.0f, 0.0f, -1.0f, 0.25f, 0.0f,  // 2 // (4)
+
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.25f, 0.0f,  // 1
+        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.25f, 0.25f, // 5
+         0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.5f, 0.25f,  // 3
+        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.25f, 0.0f,  // 6
+         0.5f,  0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.5f, 0.25f,  // 4
+         0.5f, -0.5f,  0.5f,  0.0f, 0.0f, 1.0f, 0.5f, 0.0f,   // 2
+
+        -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f, 0.5f, 0.0f,   // 1
+        -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f, 0.0f, 0.5f, 0.25f,  // 5
+        -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f, 0.75f, 0.25f, // 3
+        -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f, 0.0f, 0.5f, 0.0f,   // 6
+        -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f, 0.0f, 0.75f, 0.25f, // 4
+        -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f, 0.0f, 0.75f, 0.0f,  // 2
+
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 0.25, 0.25f,  // 1
+         0.5f, -0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 0.25f, 0.5f,  // 5
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 0.5f, 0.5f,   // 3
+         0.5f,  0.5f,  0.5f,  1.0f, 0.0f, 0.0f, 0.25f, 0.25f, // 6
+         0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 0.5f, 0.5f,   // 4
+         0.5f,  0.5f, -0.5f,  1.0f, 0.0f, 0.0f, 0.5f, 0.25f,  // 2
+
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f, 0.25f, 0.5f,  // 1
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f, 0.25f, 0.75f, // 5
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f, 0.5f, 0.75f,  // 3
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f, 0.25f, 0.5f,  // 6
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f, 0.0f, 0.5f, 0.75f,  // 4
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f, 0.0f, 0.5f, 0.5f,   // 2
+
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.25f, 0.75f, // 1
+        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.25f, 1.0f,  // 5
+         0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.5f, 1.0f,   // 3
+        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.25f, 0.75f, // 6
+         0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 0.0f, 0.5f, 1.0f,   // 4
+         0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 0.0f, 0.5f, 0.75f   // 2
+};
+
 int main()
 {
     glfwInit();
@@ -529,11 +573,8 @@ int main()
     }
     stbi_image_free(data);
 
-    unsigned int lightCubeVAO;
-    glGenVertexArrays(1, &lightCubeVAO);
-    glBindVertexArray(lightCubeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBOs[3]);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
     // note that we update the lamp's position attribute's stride to reflect the updated buffer data
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -611,36 +652,35 @@ int main()
         glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-        floorShader.setVec3("lightPos", lightPos);
-        floorShader.setVec3("viewPos", cameraPos);
-        floorShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
-        floorShader.setVec3("objectColor", glm::vec3(0.83f, 0.68f, 0.21f));
-        floorShader.setFloat("specularStrength", specularStrength);
+        lampPostShader.setVec3("lightPos", lightPos);
+        lampPostShader.setVec3("viewPos", cameraPos);
+        lampPostShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        lampPostShader.setVec3("objectColor", glm::vec3(0.83f, 0.68f, 0.21f));
+        lampPostShader.setFloat("specularStrength", specularStrength);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(lampPostVertices) / (8 * sizeof(float)));
 
         // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
         lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
         lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
 
+        #TODO: Verificar a renderização do cubo da lâmpada
         // also draw the lamp object
         lightCubeShader.use();
+        glBindVertexArray(VAOs[3]);
         lightCubeShader.setMat4("projection", projection);
         lightCubeShader.setMat4("view", view);
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.2f)); // a smaller cube
+        model = glm::scale(model, glm::vec3(0.05f)); // a smaller cube
         lightCubeShader.setMat4("model", model);
-
-        glBindVertexArray(lightCubeVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeLamp) / (8 * sizeof(float)));
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glDeleteVertexArrays(1, &lightCubeVAO);
-    glDeleteVertexArrays(3, VAOs);
-    glDeleteBuffers(3, VBOs);
+    glDeleteVertexArrays(4, VAOs);
+    glDeleteBuffers(4, VBOs);
     glfwTerminate();
     return 0;
 }
