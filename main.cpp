@@ -74,13 +74,13 @@ CarState carState;
 
 // Dados de vértices para o chão
 // Três primeiros são coordenadas, três seguintes são normalizados e dois últimos para textura
-float vertices[] = {
-    -50.0f,  -0.6f, -50.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f,
-     50.0f,  -0.6f, -50.0f, 1.0f, 1.0f, 0.0f, -1.0f, 0.0f,
-     50.0f,  -0.6f,  50.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-     50.0f,  -0.6f,  50.0f, 1.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-    -50.0f,  -0.6f,  50.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
-    -50.0f,  -0.6f, -50.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f
+float floorVertices[] = {
+    -50.0f,  -0.6f, -50.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+     50.0f,  -0.6f, -50.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+     50.0f,  -0.6f,  50.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+     50.0f,  -0.6f,  50.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -50.0f,  -0.6f,  50.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -50.0f,  -0.6f, -50.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f
 };
 
 float carVertices[] = {
@@ -464,7 +464,7 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
-    Shader ourShader("vertex.glsl", "fragment.glsl");
+    Shader floorShader("vertex.glsl", "fragment.glsl");
     Shader carShader("vertex.glsl", "car_shader.glsl");
     Shader lampPostShader("vertex.glsl", "car_shader.glsl");
 
@@ -474,7 +474,7 @@ int main()
 
     glBindVertexArray(VAOs[0]);
     glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floorVertices), floorVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -539,11 +539,10 @@ int main()
     glEnableVertexAttribArray(0);
 
     //Shaders utilizados para a iluminação
-    Shader lightingShader("phong_lighting.vs", "phong_lighting.fs");
     Shader lightCubeShader("light_cube.vs", "light_cube.fs");
 
-    ourShader.use();
-    ourShader.setInt("texture1", 0);
+    floorShader.use();
+    floorShader.setInt("texture1", 0);
 
     carShader.use();
     carShader.setInt("texture2", 0);
@@ -576,12 +575,18 @@ int main()
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         projection = glm::perspective(glm::radians(70.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 220.0f);
 
-        ourShader.use();
+        floorShader.use();
         glBindVertexArray(VAOs[0]);
-        ourShader.setMat4("projection", projection);
-        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
-        glUniformMatrix4fv(glGetUniformLocation(ourShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / (8 * sizeof(float)));
+        floorShader.setMat4("projection", projection);
+        glUniformMatrix4fv(glGetUniformLocation(floorShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(floorShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        floorShader.setVec3("lightPos", lightPos);
+        floorShader.setVec3("viewPos", cameraPos);
+        floorShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        floorShader.setVec3("objectColor", glm::vec3(0.83f, 0.68f, 0.21f));
+        floorShader.setFloat("specularStrength", specularStrength);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(floorVertices) / (8 * sizeof(float)));
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture2);
@@ -592,6 +597,12 @@ int main()
         carShader.setMat4("projection", projection);
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(carShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        carShader.setVec3("lightPos", lightPos);
+        carShader.setVec3("viewPos", cameraPos);
+        carShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        carShader.setVec3("objectColor", glm::vec3(0.83f, 0.68f, 0.21f));
+        carShader.setFloat("specularStrength", specularStrength);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(carVertices) / (8 * sizeof(float)));
 
         lampPostShader.use();
@@ -599,25 +610,17 @@ int main()
         lampPostShader.setMat4("projection", projection);
         glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "view"), 1, GL_FALSE, &view[0][0]);
         glUniformMatrix4fv(glGetUniformLocation(lampPostShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        floorShader.setVec3("lightPos", lightPos);
+        floorShader.setVec3("viewPos", cameraPos);
+        floorShader.setVec3("lightColor", glm::vec3(1.0f, 1.0f, 1.0f));
+        floorShader.setVec3("objectColor", glm::vec3(0.83f, 0.68f, 0.21f));
+        floorShader.setFloat("specularStrength", specularStrength);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(lampPostVertices) / (8 * sizeof(float)));
 
         // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
         lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
         lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
-
-        // be sure to activate shader when setting uniforms/drawing objects
-        lightingShader.use();
-        lightingShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        lightingShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
-        lightingShader.setVec3("lightPos", lightPos);
-        lightingShader.setVec3("viewPos", cameraPos);
-        lightingShader.setFloat("specularStrength", specularStrength);
-
-        // view/projection transformations
-        glm::mat4 projection = glm::perspective(glm::radians(6.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        lightingShader.setMat4("projection", projection);
-        lightingShader.setMat4("view", view);
-        lightingShader.setMat4("model", model);
 
         // also draw the lamp object
         lightCubeShader.use();
