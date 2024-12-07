@@ -15,9 +15,9 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 1800;
 const unsigned int SCR_HEIGHT = 1200;
 
-glm::vec3 lightPos(1.2f, 7.2f, 3.2f);
+glm::vec3 lightPos(9.0f, 7.2f, 37.3f);
 
-float specularStrength = 0.5;
+float specularStrength = 0.3;
 
 glm::mat4 view;
 glm::mat4 projection;
@@ -410,13 +410,6 @@ float lampPostVertices[] = {
     1.2f, 7.2f,  3.1f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
     1.2f, 0.48f, 3.1f,  0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
 
-    1.8f, 7.2f, 3.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-    0.2f, 7.2f, 3.2f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-    0.2f, 7.8f, 3.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    0.2f, 7.8f, 3.2f,  1.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    1.8f, 7.8f, 3.2f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,
-    1.8f, 7.2f, 3.2f,  0.0f, 0.0f,  0.0f, 1.0f, 0.0f,
-
     1.4f, 0.0f, 3.2f, -1.0f, 0.0f,  0.0f, -1.0f,  0.0f,
     1.4f, 0.48f, 3.2f,  0.0f, 0.0f, -1.0f,  0.0f,  1.0f,
     0.6f, 0.48f, 3.2f,  1.0f, 0.0f, -1.0f,  0.0f,  1.0f,
@@ -659,11 +652,6 @@ int main()
         lampPostShader.setFloat("specularStrength", specularStrength);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(lampPostVertices) / (8 * sizeof(float)));
 
-        // change the light's position values over time (can be done anywhere in the render loop actually, but try to do it at least before using the light source positions)
-        lightPos.x = 1.0f + sin(glfwGetTime()) * 2.0f;
-        lightPos.y = sin(glfwGetTime() / 2.0f) * 1.0f;
-
-        #TODO: Verificar a renderização do cubo da lâmpada
         // also draw the lamp object
         lightCubeShader.use();
         glBindVertexArray(VAOs[3]);
@@ -671,7 +659,7 @@ int main()
         lightCubeShader.setMat4("view", view);
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
-        model = glm::scale(model, glm::vec3(0.05f)); // a smaller cube
+        model = glm::scale(model, glm::vec3(0.015f)); // a smaller cube
         lightCubeShader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, sizeof(cubeLamp) / (8 * sizeof(float)));
 
